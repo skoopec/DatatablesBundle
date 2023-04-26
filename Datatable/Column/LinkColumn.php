@@ -68,6 +68,11 @@ class LinkColumn extends AbstractColumn
      */
     protected $email;
 
+    /**
+     * @var string
+     */
+    protected $emptyValue;
+
     //-------------------------------------------------
     // ColumnInterface
     //-------------------------------------------------
