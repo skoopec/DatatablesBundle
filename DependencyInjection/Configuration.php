@@ -15,12 +15,15 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * Class Configuration
+ */
 class Configuration implements ConfigurationInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('sg_datatables');
         if (method_exists($treeBuilder, 'getRootNode')) {
@@ -38,7 +41,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Add datatable section.
      */
-    private function addDatatableSection(ArrayNodeDefinition $rootNode)
+    private function addDatatableSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->children()
@@ -53,7 +56,6 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->end()
-            ->end()
-        ;
+            ->end();
     }
 }
