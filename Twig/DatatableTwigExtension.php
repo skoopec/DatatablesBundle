@@ -23,6 +23,9 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
+/**
+ * Class DatatableTwigExtension
+ */
 class DatatableTwigExtension extends AbstractExtension
 {
     /**
@@ -52,7 +55,7 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * {@inheritdoc}
      */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction(
@@ -86,7 +89,7 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('sg_datatables_bool_var', [$this, 'boolVar']),
@@ -152,12 +155,12 @@ class DatatableTwigExtension extends AbstractExtension
     public function datatablesRenderFilter(Environment $twig, DatatableInterface $datatable, ColumnInterface $column, $position)
     {
         /** @var FilterInterface $filter */
-        $filter = $this->accessor->getValue($column, 'filter');
-        $index = $this->accessor->getValue($column, 'index');
+        $filter       = $this->accessor->getValue($column, 'filter');
+        $index        = $this->accessor->getValue($column, 'index');
         $searchColumn = $this->accessor->getValue($filter, 'searchColumn');
 
         if (null !== $searchColumn) {
-            $columns = $datatable->getColumnBuilder()->getColumnNames();
+            $columns           = $datatable->getColumnBuilder()->getColumnNames();
             $searchColumnIndex = $columns[$searchColumn];
         } else {
             $searchColumnIndex = $index;
@@ -166,10 +169,10 @@ class DatatableTwigExtension extends AbstractExtension
         return $twig->render(
             $filter->getTemplate(),
             [
-                'column' => $column,
+                'column'              => $column,
                 'search_column_index' => $searchColumnIndex,
-                'datatable_name' => $datatable->getName(),
-                'position' => $position,
+                'datatable_name'      => $datatable->getName(),
+                'position'            => $position,
             ]
         );
     }
@@ -183,10 +186,10 @@ class DatatableTwigExtension extends AbstractExtension
      */
     public function datatablesRenderMultiselectActions(Environment $twig, ColumnInterface $multiselectColumn, $pipeline)
     {
-        $parameters = [];
-        $values = [];
-        $actions = $this->accessor->getValue($multiselectColumn, 'actions');
-        $domId = $this->accessor->getValue($multiselectColumn, 'renderActionsToId');
+        $parameters    = [];
+        $values        = [];
+        $actions       = $this->accessor->getValue($multiselectColumn, 'actions');
+        $domId         = $this->accessor->getValue($multiselectColumn, 'renderActionsToId');
         $datatableName = $this->accessor->getValue($multiselectColumn, 'datatableName');
 
         /** @var Action $action */
@@ -207,11 +210,11 @@ class DatatableTwigExtension extends AbstractExtension
                     $values[$actionKey] = $action->getButtonValue();
 
                     if (\is_bool($values[$actionKey])) {
-                        $values[$actionKey] = (int) $values[$actionKey];
+                        $values[$actionKey] = (int)$values[$actionKey];
                     }
 
                     if (true === $action->isButtonValuePrefix()) {
-                        $values[$actionKey] = 'sg-datatables-'.$datatableName.'-multiselect-button-'.$actionKey.'-'.$values[$actionKey];
+                        $values[$actionKey] = 'sg-datatables-' . $datatableName . '-multiselect-button-' . $actionKey . '-' . $values[$actionKey];
                     }
                 } else {
                     $values[$actionKey] = null;
@@ -222,12 +225,12 @@ class DatatableTwigExtension extends AbstractExtension
         return $twig->render(
             '@SgDatatables/datatable/multiselect_actions.html.twig',
             [
-                'actions' => $actions,
+                'actions'          => $actions,
                 'route_parameters' => $parameters,
-                'values' => $values,
-                'datatable_name' => $datatableName,
-                'dom_id' => $domId,
-                'pipeline' => $pipeline,
+                'values'           => $values,
+                'datatable_name'   => $datatableName,
+                'dom_id'           => $domId,
+                'pipeline'         => $pipeline,
             ]
         );
     }
@@ -239,9 +242,11 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * Renders: {{ var ? 'true' : 'false' }}.
      *
+     * @param $value
+     *
      * @return string
      */
-    public function boolVar($value)
+    public function boolVar($value): string
     {
         if ($value) {
             return 'true';
