@@ -183,10 +183,14 @@ class DatatableQueryBuilder
      */
     private $useCountResultCacheArgs = [false];
 
+    /**
+     * @var array
+     */
+    private $columnNames;
+
     //-------------------------------------------------
     // Ctor. && Init column arrays
     //-------------------------------------------------
-
     /**
      * @throws Exception
      */
