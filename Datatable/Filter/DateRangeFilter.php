@@ -35,7 +35,10 @@ class DateRangeFilter extends AbstractFilter
      */
     public function addAndExpression(Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $searchTypeOfField, &$parameterCounter)
     {
-        list($_dateStart, $_dateEnd) = explode(' - ', $searchValue);
+        if (strpos($searchValue, '-') === false) {
+            return $andExpr;
+        }
+        [$_dateStart, $_dateEnd] = explode(' - ', $searchValue);
         $dateStart = new DateTime($_dateStart);
         $dateEnd = new DateTime($_dateEnd);
         $dateEnd->setTime(23, 59, 59);
