@@ -11,6 +11,13 @@
 
 namespace Sg\DatatablesBundle\Datatable\Column;
 
+use DateTime;
+use function count;
+use function is_array;
+
+/**
+ * Class ArrayColumn
+ */
 class ArrayColumn extends Column
 {
     /**
@@ -28,7 +35,7 @@ class ArrayColumn extends Column
      */
     protected function arrayToString(array $array, $tab = 0): string
     {
-        $arrayField = '';
+        $arrayField         = '';
         $isArrayAssociative = $this->isAssociative($array);
         foreach ($array as $key => $arrayElement) {
             for ($i = 0; $i < $tab; ++$i) {
@@ -36,10 +43,10 @@ class ArrayColumn extends Column
             }
 
             if ($isArrayAssociative) {
-                $arrayField .= $key.': ';
+                $arrayField .= $key . ': ';
             }
 
-            if (\is_array($arrayElement)) {
+            if (is_array($arrayElement)) {
                 $arrayField .= '[<br/>';
                 $arrayField .= $this->arrayToString($arrayElement, $tab + 1);
                 $arrayField .= ']<br/>';
@@ -47,13 +54,13 @@ class ArrayColumn extends Column
                 continue;
             }
 
-            if ($arrayElement instanceof \DateTime) {
-                $arrayField .= $arrayElement->format('Y-m-d').'<br/>';
+            if ($arrayElement instanceof DateTime) {
+                $arrayField .= $arrayElement->format('Y-m-d') . '<br/>';
 
                 continue;
             }
 
-            $arrayField .= $arrayElement.'<br/>';
+            $arrayField .= $arrayElement . '<br/>';
         }
 
         return $arrayField;
@@ -65,6 +72,6 @@ class ArrayColumn extends Column
             return false;
         }
 
-        return array_keys($array) !== range(0, \count($array) - 1);
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 }

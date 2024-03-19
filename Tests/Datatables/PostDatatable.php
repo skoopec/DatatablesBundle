@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Tests\Datatables;
 
+use NumberFormatter;
 use Sg\DatatablesBundle\Datatable\AbstractDatatable;
 use Sg\DatatablesBundle\Datatable\Column\ActionColumn;
 use Sg\DatatablesBundle\Datatable\Column\AttributeColumn;
@@ -21,6 +22,9 @@ use Sg\DatatablesBundle\Datatable\Column\ImageColumn;
 use Sg\DatatablesBundle\Datatable\Column\NumberColumn;
 use Sg\DatatablesBundle\Datatable\Column\VirtualColumn;
 
+/**
+ * Class PostDatatable
+ */
 class PostDatatable extends AbstractDatatable
 {
     /**
@@ -29,7 +33,7 @@ class PostDatatable extends AbstractDatatable
     public function buildDatatable(array $options = [])
     {
         $this->ajax->set([
-            'url' => '',
+            'url'    => '',
             'method' => 'GET',
         ]);
 
@@ -54,23 +58,22 @@ class PostDatatable extends AbstractDatatable
                 'title' => 'DateTimeColumn',
             ])
             ->add('image', ImageColumn::class, [
-                'title' => 'ImageColumn',
+                'title'          => 'ImageColumn',
                 'imagine_filter' => '',
-                'relative_path' => '',
+                'relative_path'  => '',
             ])
             ->add(null, ActionColumn::class, [
-                'title' => 'ActionColumn',
+                'title'   => 'ActionColumn',
                 'actions' => [
                 ],
             ])
             ->add('number', NumberColumn::class, [
-                'title' => 'NumberColumn',
-                'formatter' => new \NumberFormatter('en_US', \NumberFormatter::DECIMAL),
+                'title'     => 'NumberColumn',
+                'formatter' => new NumberFormatter('en_US', NumberFormatter::DECIMAL),
             ])
             ->add('virtual', VirtualColumn::class, [
                 'title' => 'VirtualColumn',
-            ])
-        ;
+            ]);
     }
 
     /**

@@ -11,13 +11,19 @@
 
 namespace Sg\DatatablesBundle\Tests\Column;
 
+use DateTime;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionException;
 use Sg\DatatablesBundle\Datatable\Column\ArrayColumn;
 
 /**
+ * Class ArrayColumnTest
+ *
  * @internal
  * @coversNothing
  */
-final class ArrayColumnTest extends \PHPUnit\Framework\TestCase
+final class ArrayColumnTest extends TestCase
 {
     public function testIsAssociative()
     {
@@ -29,7 +35,7 @@ final class ArrayColumnTest extends \PHPUnit\Framework\TestCase
     public function testArrayToString()
     {
         $arrayColumn = new ArrayColumn();
-        $result = $this->callMethod($arrayColumn, 'arrayToString', [['a', 'b' => ['d' => new \DateTime()]]]);
+        $result      = $this->callMethod($arrayColumn, 'arrayToString', [['a', 'b' => ['d' => new DateTime()]]]);
         static::assertNotEmpty($result);
         static::assertIsString($result);
     }
@@ -37,12 +43,14 @@ final class ArrayColumnTest extends \PHPUnit\Framework\TestCase
     /**
      * @param $obj
      * @param $name
+     * @param array $args
      *
-     * @throws \ReflectionException
+     * @return mixed
+     * @throws ReflectionException
      */
     public static function callMethod($obj, $name, array $args)
     {
-        $class = new \ReflectionClass($obj);
+        $class  = new ReflectionClass($obj);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 

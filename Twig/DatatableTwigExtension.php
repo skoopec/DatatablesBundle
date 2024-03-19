@@ -19,9 +19,15 @@ use Sg\DatatablesBundle\Datatable\Filter\FilterInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use function call_user_func;
+use function is_array;
+use function is_bool;
 
 /**
  * Class DatatableTwigExtension
@@ -45,7 +51,7 @@ class DatatableTwigExtension extends AbstractExtension
     //-------------------------------------------------
 
     /**
-     * {@inheritdoc}
+     * {}
      */
     public function getName()
     {
@@ -103,7 +109,13 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * Renders the template.
      *
+     * @param Environment $twig
+     * @param DatatableInterface $datatable
+     *
      * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function datatablesRender(Environment $twig, DatatableInterface $datatable)
     {
@@ -118,7 +130,13 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * Renders the html template.
      *
+     * @param Environment $twig
+     * @param DatatableInterface $datatable
+     *
      * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function datatablesRenderHtml(Environment $twig, DatatableInterface $datatable)
     {
@@ -133,7 +151,13 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * Renders the js template.
      *
+     * @param Environment $twig
+     * @param DatatableInterface $datatable
+     *
      * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function datatablesRenderJs(Environment $twig, DatatableInterface $datatable)
     {
@@ -148,9 +172,15 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * Renders a Filter template.
      *
+     * @param Environment $twig
+     * @param DatatableInterface $datatable
+     * @param ColumnInterface $column
      * @param string $position
      *
      * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function datatablesRenderFilter(Environment $twig, DatatableInterface $datatable, ColumnInterface $column, $position)
     {
@@ -180,9 +210,14 @@ class DatatableTwigExtension extends AbstractExtension
     /**
      * Renders the MultiselectColumn Actions.
      *
+     * @param Environment $twig
+     * @param ColumnInterface $multiselectColumn
      * @param int $pipeline
      *
      * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function datatablesRenderMultiselectActions(Environment $twig, ColumnInterface $multiselectColumn, $pipeline)
     {
@@ -195,12 +230,12 @@ class DatatableTwigExtension extends AbstractExtension
         /** @var Action $action */
         foreach ($actions as $actionKey => $action) {
             $routeParameters = $action->getRouteParameters();
-            if (\is_array($routeParameters)) {
+            if (is_array($routeParameters)) {
                 foreach ($routeParameters as $key => $value) {
                     $parameters[$actionKey][$key] = $value;
                 }
             } elseif ($routeParameters instanceof Closure) {
-                $parameters[$actionKey] = \call_user_func($routeParameters);
+                $parameters[$actionKey] = call_user_func($routeParameters);
             } else {
                 $parameters[$actionKey] = [];
             }
@@ -209,7 +244,7 @@ class DatatableTwigExtension extends AbstractExtension
                 if (null !== $action->getButtonValue()) {
                     $values[$actionKey] = $action->getButtonValue();
 
-                    if (\is_bool($values[$actionKey])) {
+                    if (is_bool($values[$actionKey])) {
                         $values[$actionKey] = (int)$values[$actionKey];
                     }
 

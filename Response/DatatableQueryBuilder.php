@@ -11,13 +11,16 @@
 
 namespace Sg\DatatablesBundle\Response;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Sg\DatatablesBundle\Datatable\Ajax;
 use Sg\DatatablesBundle\Datatable\Column\ColumnInterface;
 use Sg\DatatablesBundle\Datatable\DatatableInterface;
@@ -27,9 +30,14 @@ use Sg\DatatablesBundle\Datatable\Filter\FilterInterface;
 use Sg\DatatablesBundle\Datatable\Options;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use function array_key_exists;
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function in_array;
 
 /**
- * @todo: remove phpcs warnings
+ * Class DatatableQueryBuilder
  */
 class DatatableQueryBuilder
 {
@@ -198,28 +206,28 @@ class DatatableQueryBuilder
     {
         $this->requestParams = $requestParams;
 
-        $this->em = $datatable->getEntityManager();
+        $this->em         = $datatable->getEntityManager();
         $this->entityName = $datatable->getEntity();
 
-        $this->metadata = $this->getMetadata($this->entityName);
+        $this->metadata        = $this->getMetadata($this->entityName);
         $this->entityShortName = $this->getSafeName(strtolower($this->metadata->getReflectionClass()->getShortName()));
 
         $this->rootEntityIdentifier = $this->getIdentifier($this->metadata);
 
-        $this->qb = $this->em->createQueryBuilder()->from($this->entityName, $this->entityShortName);
+        $this->qb       = $this->em->createQueryBuilder()->from($this->entityName, $this->entityShortName);
         $this->accessor = PropertyAccess::createPropertyAccessor();
 
-        $this->columns = $datatable->getColumnBuilder()->getColumns();
+        $this->columns     = $datatable->getColumnBuilder()->getColumns();
         $this->columnNames = $datatable->getColumnBuilder()->getColumnNames();
 
         $this->selectColumns = [];
         $this->searchColumns = [];
-        $this->orderColumns = [];
-        $this->joins = [];
+        $this->orderColumns  = [];
+        $this->joins         = [];
 
-        $this->options = $datatable->getOptions();
+        $this->options  = $datatable->getOptions();
         $this->features = $datatable->getFeatures();
-        $this->ajax = $datatable->getAjax();
+        $this->ajax     = $datatable->getAjax();
 
         $this->initColumnArrays();
     }
@@ -231,9 +239,9 @@ class DatatableQueryBuilder
     /**
      * Build query.
      *
+     * @return $this
      * @deprecated no longer used by internal code
      *
-     * @return $this
      */
     public function buildQuery()
     {
@@ -264,6 +272,7 @@ class DatatableQueryBuilder
      * Get the built qb.
      *
      * @return QueryBuilder
+     * @throws Exception
      */
     public function getBuiltQb()
     {
@@ -289,7 +298,7 @@ class DatatableQueryBuilder
 
         $query = $qb->getQuery();
         $query->setHydrationMode(Query::HYDRATE_ARRAY)->useQueryCache($this->useQueryCache);
-        \call_user_func_array([$query, 'useResultCache'], $this->useResultCacheArgs);
+        call_user_func_array([$query, 'useResultCache'], $this->useResultCacheArgs);
 
         return $query;
     }
@@ -298,21 +307,23 @@ class DatatableQueryBuilder
      * Query results before filtering.
      *
      * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getCountAllResults()
     {
         $qb = clone $this->qb;
-        $qb->select('count(distinct '.$this->entityShortName.'.'.$this->rootEntityIdentifier.')');
+        $qb->select('count(distinct ' . $this->entityShortName . '.' . $this->rootEntityIdentifier . ')');
         $qb->resetDQLPart('orderBy');
         $this->setJoins($qb);
 
         $query = $qb->getQuery();
         $query->useQueryCache($this->useCountQueryCache);
-        \call_user_func_array([$query, 'useResultCache'], $this->useCountResultCacheArgs);
+        call_user_func_array([$query, 'useResultCache'], $this->useCountResultCacheArgs);
 
-        return ! $qb->getDQLPart('groupBy')
-            ? (int) $query->getSingleScalarResult()
-            : \count($query->getResult());
+        return !$qb->getDQLPart('groupBy')
+            ? (int)$query->getSingleScalarResult()
+            : count($query->getResult());
     }
 
     /**
@@ -347,15 +358,15 @@ class DatatableQueryBuilder
      * Set wheter or not to cache result of records retrieval query and if so, for how long and under which ID. Method is
      * consistent with {@see \Doctrine\ORM\AbstractQuery::useResultCache} method.
      *
-     * @param bool        $bool          flag defining whether use caching or not
-     * @param int|null    $lifetime      lifetime of cache in seconds
+     * @param bool $bool                 flag defining whether use caching or not
+     * @param int|null $lifetime         lifetime of cache in seconds
      * @param string|null $resultCacheId string identifier for result cache if left empty ID will be generated by Doctrine
      *
      * @return $this
      */
     public function useResultCache($bool, $lifetime = null, $resultCacheId = null)
     {
-        $this->useResultCacheArgs = \func_get_args();
+        $this->useResultCacheArgs = func_get_args();
 
         return $this;
     }
@@ -364,15 +375,15 @@ class DatatableQueryBuilder
      * Set wheter or not to cache result of records counting query and if so, for how long and under which ID. Method is
      * consistent with {@see \Doctrine\ORM\AbstractQuery::useResultCache} method.
      *
-     * @param bool        $bool          flag defining whether use caching or not
-     * @param int|null    $lifetime      lifetime of cache in seconds
+     * @param bool $bool                 flag defining whether use caching or not
+     * @param int|null $lifetime         lifetime of cache in seconds
      * @param string|null $resultCacheId string identifier for result cache if left empty ID will be generated by Doctrine
      *
      * @return $this
      */
     public function useCountResultCache($bool, $lifetime = null, $resultCacheId = null)
     {
-        $this->useCountResultCacheArgs = \func_get_args();
+        $this->useCountResultCacheArgs = func_get_args();
 
         return $this;
     }
@@ -381,23 +392,24 @@ class DatatableQueryBuilder
      * Init column arrays for select, search, order and joins.
      *
      * @return $this
+     * @throws \Doctrine\DBAL\Exception
      */
     private function initColumnArrays()
     {
         foreach ($this->columns as $key => $column) {
-            $dql = $this->accessor->getValue($column, 'dql');
+            $dql  = $this->accessor->getValue($column, 'dql');
             $data = $this->accessor->getValue($column, 'data');
 
-            $currentPart = $this->entityShortName;
+            $currentPart  = $this->entityShortName;
             $currentAlias = $currentPart;
-            $metadata = $this->metadata;
+            $metadata     = $this->metadata;
 
             if (true === $this->accessor->getValue($column, 'customDql')) {
                 $columnAlias = str_replace('.', '_', $data);
 
                 // Select
                 $selectDql = preg_replace('/\{([\w]+)\}/', '$1', $dql);
-                $this->addSelectColumn(null, $selectDql.' '.$columnAlias);
+                $this->addSelectColumn(null, $selectDql . ' ' . $columnAlias);
                 // Order on alias column name
                 $this->addOrderColumn($column, null, $columnAlias);
                 // Fix subqueries alias duplication
@@ -406,16 +418,16 @@ class DatatableQueryBuilder
             } elseif (true === $this->accessor->getValue($column, 'selectColumn')) {
                 $parts = explode('.', $dql);
 
-                while (\count($parts) > 1) {
-                    $previousPart = $currentPart;
+                while (count($parts) > 1) {
+                    $previousPart  = $currentPart;
                     $previousAlias = $currentAlias;
 
-                    $currentPart = array_shift($parts);
-                    $currentAlias = ($previousPart === $this->entityShortName ? '' : $previousPart.'_').$currentPart;
+                    $currentPart  = array_shift($parts);
+                    $currentAlias = ($previousPart === $this->entityShortName ? '' : $previousPart . '_') . $currentPart;
                     $currentAlias = $this->getSafeName($currentAlias);
 
-                    if (! \array_key_exists($previousAlias.'.'.$currentPart, $this->joins)) {
-                        $this->addJoin($previousAlias.'.'.$currentPart, $currentAlias, $this->accessor->getValue($column, 'joinType'));
+                    if (!array_key_exists($previousAlias . '.' . $currentPart, $this->joins)) {
+                        $this->addJoin($previousAlias . '.' . $currentPart, $currentAlias, $this->accessor->getValue($column, 'joinType'));
                     }
 
                     $metadata = $this->setIdentifierFromAssociation($currentAlias, $currentPart, $metadata);
@@ -427,12 +439,12 @@ class DatatableQueryBuilder
             } else {
                 // Add Order-Field for VirtualColumn
                 if ($this->accessor->isReadable($column, 'orderColumn') && true === $this->accessor->getValue($column, 'orderable')) {
-                    $orderColumns = (array) $this->accessor->getValue($column, 'orderColumn');
+                    $orderColumns = (array)$this->accessor->getValue($column, 'orderColumn');
                     foreach ($orderColumns as $orderColumn) {
                         $orderParts = explode('.', $orderColumn);
-                        if (\count($orderParts) < 2) {
-                            if (! isset($this->columnNames[$orderColumn]) || null === $this->accessor->getValue($this->columns[$this->columnNames[$orderColumn]], 'customDql')) {
-                                $orderColumn = $this->entityShortName.'.'.$orderColumn;
+                        if (count($orderParts) < 2) {
+                            if (!isset($this->columnNames[$orderColumn]) || null === $this->accessor->getValue($this->columns[$this->columnNames[$orderColumn]], 'customDql')) {
+                                $orderColumn = $this->entityShortName . '.' . $orderColumn;
                             }
                         }
                         $this->orderColumns[$key][] = $orderColumn;
@@ -443,11 +455,11 @@ class DatatableQueryBuilder
 
                 // Add Search-Field for VirtualColumn
                 if ($this->accessor->isReadable($column, 'searchColumn') && true === $this->accessor->getValue($column, 'searchable')) {
-                    $searchColumns = (array) $this->accessor->getValue($column, 'searchColumn');
+                    $searchColumns = (array)$this->accessor->getValue($column, 'searchColumn');
                     foreach ($searchColumns as $searchColumn) {
                         $searchParts = explode('.', $searchColumn);
-                        if (\count($searchParts) < 2) {
-                            $searchColumn = $this->entityShortName.'.'.$searchColumn;
+                        if (count($searchParts) < 2) {
+                            $searchColumn = $this->entityShortName . '.' . $searchColumn;
                         }
                         $this->searchColumns[$key][] = $searchColumn;
                     }
@@ -473,7 +485,7 @@ class DatatableQueryBuilder
     {
         foreach ($this->selectColumns as $key => $value) {
             if (false === empty($key)) {
-                $qb->addSelect('partial '.$key.'.{'.implode(',', $value).'}');
+                $qb->addSelect('partial ' . $key . '.{' . implode(',', $value) . '}');
             } else {
                 $qb->addSelect($value);
             }
@@ -506,16 +518,16 @@ class DatatableQueryBuilder
         if (isset($this->requestParams['search']) && '' !== $this->requestParams['search']['value']) {
             $orExpr = $qb->expr()->orX();
 
-            $globalSearch = $this->requestParams['search']['value'];
+            $globalSearch     = $this->requestParams['search']['value'];
             $globalSearchType = $this->options->getGlobalSearchType();
 
             foreach ($this->columns as $key => $column) {
                 if (true === $this->isSearchableColumn($column)) {
                     /** @var AbstractFilter $filter */
-                    $filter = $this->accessor->getValue($column, 'filter');
-                    $searchType = $globalSearchType;
-                    $searchFields = (array) $this->searchColumns[$key];
-                    $searchValue = $globalSearch;
+                    $filter            = $this->accessor->getValue($column, 'filter');
+                    $searchType        = $globalSearchType;
+                    $searchFields      = (array)$this->searchColumns[$key];
+                    $searchValue       = $globalSearch;
                     $searchTypeOfField = $column->getTypeOfField();
                     foreach ($searchFields as $searchField) {
                         $orExpr = $filter->addOrExpression($orExpr, $qb, $searchType, $searchField, $searchValue, $searchTypeOfField, $key);
@@ -536,7 +548,7 @@ class DatatableQueryBuilder
 
             foreach ($this->columns as $key => $column) {
                 if (true === $this->isSearchableColumn($column)) {
-                    if (false === \array_key_exists($key, $this->requestParams['columns'])) {
+                    if (false === array_key_exists($key, $this->requestParams['columns'])) {
                         continue;
                     }
 
@@ -544,8 +556,8 @@ class DatatableQueryBuilder
 
                     if ('' !== $searchValue && null !== $searchValue) {
                         /** @var FilterInterface $filter */
-                        $filter = $this->accessor->getValue($column, 'filter');
-                        $searchFields = (array) $this->searchColumns[$key];
+                        $filter            = $this->accessor->getValue($column, 'filter');
+                        $searchFields      = (array)$this->searchColumns[$key];
                         $searchTypeOfField = $column->getTypeOfField();
                         foreach ($searchFields as $searchField) {
                             $andExpr = $filter->addAndExpression($andExpr, $qb, $searchField, $searchValue, $searchTypeOfField, $parameterCounter);
@@ -570,15 +582,15 @@ class DatatableQueryBuilder
      */
     private function setOrderBy(QueryBuilder $qb)
     {
-        if (isset($this->requestParams['order']) && \count($this->requestParams['order'])) {
-            $counter = \count($this->requestParams['order']);
+        if (isset($this->requestParams['order']) && count($this->requestParams['order'])) {
+            $counter = count($this->requestParams['order']);
 
             for ($i = 0; $i < $counter; ++$i) {
-                $columnIdx = (int) $this->requestParams['order'][$i]['column'];
+                $columnIdx     = (int)$this->requestParams['order'][$i]['column'];
                 $requestColumn = $this->requestParams['columns'][$columnIdx];
 
                 if ('true' === $requestColumn['orderable']) {
-                    $columnNames = (array) $this->orderColumns[$columnIdx];
+                    $columnNames    = (array)$this->orderColumns[$columnIdx];
                     $orderDirection = $this->requestParams['order'][$i]['dir'];
 
                     foreach ($columnNames as $columnName) {
@@ -595,14 +607,14 @@ class DatatableQueryBuilder
      * Paging.
      * Construct the LIMIT clause for server-side processing SQL query.
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     private function setLimit(QueryBuilder $qb)
     {
         if (true === $this->features->getPaging() || null === $this->features->getPaging()) {
-            if (isset($this->requestParams['start']) && self::DISABLE_PAGINATION !== (int) $this->requestParams['length']) {
+            if (isset($this->requestParams['start']) && self::DISABLE_PAGINATION !== (int)$this->requestParams['length']) {
                 $qb->setFirstResult($this->requestParams['start'])->setMaxResults($this->requestParams['length']);
             }
         } elseif ($this->ajax->getPipeline() > 0) {
@@ -621,8 +633,8 @@ class DatatableQueryBuilder
      *
      * @author Gaultier Boniface <https://github.com/wysow>
      *
-     * @param array|string       $association
-     * @param string             $key
+     * @param array|string $association
+     * @param string $key
      * @param ClassMetadata|null $metadata
      *
      * @throws Exception
@@ -636,7 +648,7 @@ class DatatableQueryBuilder
         }
 
         $targetEntityClass = $metadata->getAssociationTargetClass($key);
-        $targetMetadata = $this->getMetadata($targetEntityClass);
+        $targetMetadata    = $this->getMetadata($targetEntityClass);
         $this->addSelectColumn($association, $this->getIdentifier($targetMetadata));
 
         return $targetMetadata;
@@ -653,7 +665,7 @@ class DatatableQueryBuilder
     private function addSelectColumn($columnTableName, $data)
     {
         if (isset($this->selectColumns[$columnTableName])) {
-            if (! \in_array($data, $this->selectColumns[$columnTableName], true)) {
+            if (!in_array($data, $this->selectColumns[$columnTableName], true)) {
                 $this->selectColumns[$columnTableName][] = $data;
             }
         } else {
@@ -674,7 +686,7 @@ class DatatableQueryBuilder
      */
     private function addOrderColumn($column, $columnTableName, $data)
     {
-        true === $this->accessor->getValue($column, 'orderable') ? $this->orderColumns[] = ($columnTableName ? $columnTableName.'.' : '').$data : $this->orderColumns[] = null;
+        true === $this->accessor->getValue($column, 'orderable') ? $this->orderColumns[] = ($columnTableName ? $columnTableName . '.' : '') . $data : $this->orderColumns[] = null;
 
         return $this;
     }
@@ -690,7 +702,7 @@ class DatatableQueryBuilder
      */
     private function addSearchColumn($column, $columnTableName, $data)
     {
-        true === $this->accessor->getValue($column, 'searchable') ? $this->searchColumns[] = ($columnTableName ? $columnTableName.'.' : '').$data : $this->searchColumns[] = null;
+        true === $this->accessor->getValue($column, 'searchable') ? $this->searchColumns[] = ($columnTableName ? $columnTableName . '.' : '') . $data : $this->searchColumns[] = null;
 
         return $this;
     }
@@ -725,7 +737,7 @@ class DatatableQueryBuilder
     {
         $this->joins[$columnTableName] = [
             'alias' => $alias,
-            'type' => $type,
+            'type'  => $type,
         ];
 
         return $this;
@@ -734,16 +746,17 @@ class DatatableQueryBuilder
     /**
      * @param string $entityName
      *
-     * @throws Exception
-     *
      * @return ClassMetadata
+     * @throws \Doctrine\Persistence\Mapping\MappingException
+     * @throws InvalidArgumentException
+     * @throws \ReflectionException
      */
     private function getMetadata($entityName)
     {
         try {
             $metadata = $this->em->getMetadataFactory()->getMetadataFor($entityName);
-        } catch (MappingException $e) {
-            throw new Exception('DatatableQueryBuilder::getMetadata(): Given object '.$entityName.' is not a Doctrine Entity.');
+        } catch (MappingException) {
+            throw new Exception('DatatableQueryBuilder::getMetadata(): Given object ' . $entityName . ' is not a Doctrine Entity.');
         }
 
         return $metadata;
@@ -755,19 +768,25 @@ class DatatableQueryBuilder
      * @param $name
      *
      * @return string
+     * @throws \Doctrine\DBAL\Exception
      */
     private function getSafeName($name)
     {
         try {
-            $reservedKeywordsList = $this->em->getConnection()->getDatabasePlatform()->getReservedKeywordsList();
-            $isReservedKeyword = $reservedKeywordsList->isKeyword($name);
-        } catch (DBALException $exception) {
+            $reservedKeywordsList = $this->em->getConnection()->getDatabasePlatform()?->getReservedKeywordsList();
+            $isReservedKeyword    = $reservedKeywordsList->isKeyword($name);
+        } catch (DBALException) {
             $isReservedKeyword = false;
         }
 
         return $isReservedKeyword ? "_{$name}" : $name;
     }
 
+    /**
+     * @param ClassMetadata $metadata
+     *
+     * @return string|null
+     */
     private function getIdentifier(ClassMetadata $metadata)
     {
         $identifiers = $metadata->getIdentifierFieldNames();

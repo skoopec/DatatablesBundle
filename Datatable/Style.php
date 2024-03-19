@@ -11,6 +11,9 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+/**
+ * Class Style
+ */
 class Style
 {
     //-------------------------------------------------

@@ -16,7 +16,11 @@ use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function count;
 
+/**
+ * Class ImageColumn
+ */
 class ImageColumn extends AbstractColumn
 {
     use FilterableTrait;
@@ -113,21 +117,21 @@ class ImageColumn extends AbstractColumn
         //     => $path = [images]
         //     => $value = [fileName]
         $value = null;
-        $path = Helper::getDataPropertyPath($this->data, $value);
+        $path  = Helper::getDataPropertyPath($this->data, $value);
 
         if ($this->accessor->isReadable($row, $path)) {
             $images = $this->accessor->getValue($row, $path);
 
-            if (\count($images) > 0) {
+            if (count($images) > 0) {
                 foreach ($images as $key => $image) {
-                    $currentPath = $path.'['.$key.']'.$value;
-                    $content = $this->renderImageTemplate($this->accessor->getValue($row, $currentPath), '-gallery-image');
+                    $currentPath = $path . '[' . $key . ']' . $value;
+                    $content     = $this->renderImageTemplate($this->accessor->getValue($row, $currentPath), '-gallery-image');
                     $this->accessor->setValue($row, $currentPath, $content);
                 }
             } else {
                 // create an entry for the placeholder image
-                $currentPath = $path.'[0]'.$value;
-                $content = $this->renderImageTemplate(null, '-gallery-image');
+                $currentPath = $path . '[0]' . $value;
+                $content     = $this->renderImageTemplate(null, '-gallery-image');
                 $this->accessor->setValue($row, $currentPath, $content);
             }
         }
@@ -158,12 +162,12 @@ class ImageColumn extends AbstractColumn
         $resolver->setRequired(['relative_path']);
 
         $resolver->setDefaults([
-            'filter' => [TextFilter::class, []],
+            'filter'                  => [TextFilter::class, []],
             'imagine_filter_enlarged' => null,
-            'holder_url' => null,
-            'holder_width' => '50',
-            'holder_height' => '50',
-            'enlarge' => false,
+            'holder_url'              => null,
+            'holder_width'            => '50',
+            'holder_height'           => '50',
+            'enlarge'                 => false,
         ]);
 
         $resolver->setAllowedTypes('filter', 'array');
@@ -347,9 +351,9 @@ class ImageColumn extends AbstractColumn
         return $this->twig->render(
             $this->getCellContentTemplate(),
             [
-                'data' => $data,
-                'image' => $this,
-                'image_class' => 'sg-datatables-'.$this->getDatatableName().$classSuffix,
+                'data'        => $data,
+                'image'       => $this,
+                'image_class' => 'sg-datatables-' . $this->getDatatableName() . $classSuffix,
             ]
         );
     }

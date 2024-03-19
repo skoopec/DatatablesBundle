@@ -23,6 +23,9 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
+/**
+ * Class DatatableController
+ */
 class DatatableController extends AbstractController
 {
     //-------------------------------------------------
@@ -34,26 +37,28 @@ class DatatableController extends AbstractController
      *
      * @Route("/datatables/edit/field", methods={"POST"}, name="sg_datatables_edit")
      *
-     * @throws Exception
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
      *
      * @return Response
+     * @throws Exception
      */
     public function editAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         if ($request->isXmlHttpRequest()) {
             // x-editable sends some default parameters
-            $pk = $request->request->get('pk');       // entity primary key
+            $pk    = $request->request->get('pk');       // entity primary key
             $field = $request->request->get('name');  // e.g. comments.createdBy.username
             $value = $request->request->get('value'); // the new value
 
             // additional params
-            $entityClassName = $request->request->get('entityClassName'); // e.g. AppBundle\Entity\Post
-            $token = $request->request->get('token');
+            $entityClassName     = $request->request->get('entityClassName'); // e.g. AppBundle\Entity\Post
+            $token               = $request->request->get('token');
             $originalTypeOfField = $request->request->get('originalTypeOfField');
-            $path = $request->request->get('path'); // for toMany - the current element
+            $path                = $request->request->get('path'); // for toMany - the current element
 
             // check token
-            if (! $this->isCsrfTokenValid('sg-datatables-editable', $token)) {
+            if (!$this->isCsrfTokenValid('sg-datatables-editable', $token)) {
                 throw new AccessDeniedException('DatatableController::editAction(): The CSRF token is invalid.');
             }
 
@@ -61,11 +66,9 @@ class DatatableController extends AbstractController
             $entity = $this->getEntityByPk($entityClassName, $pk, $entityManager);
 
             /** @var PropertyAccessor $accessor */
-            /** @noinspection PhpUndefinedMethodInspection */
             $accessor = PropertyAccess::createPropertyAccessorBuilder()
-                ->enableMagicCall()
-                ->getPropertyAccessor()
-            ;
+                                      ->enableMagicCall()
+                                      ->getPropertyAccessor();
 
             // normalize the new value
             $value = $this->normalizeValue($originalTypeOfField, $value);
@@ -95,7 +98,7 @@ class DatatableController extends AbstractController
     private function getEntityByPk($entityClassName, $pk, EntityManagerInterface $entityManager): object
     {
         $entity = $entityManager->getRepository($entityClassName)->find($pk);
-        if (! $entity) {
+        if (!$entity) {
             throw $this->createNotFoundException('DatatableController::getEntityByPk(): The entity does not exist.');
         }
 
@@ -103,9 +106,9 @@ class DatatableController extends AbstractController
     }
 
     /**
+     * @return bool|DateTime|float|int|string|null
      * @throws Exception
      *
-     * @return bool|DateTime|float|int|string|null
      */
     private function normalizeValue(string $originalTypeOfField, $value)
     {
@@ -123,16 +126,16 @@ class DatatableController extends AbstractController
                 break;
             case Types::SMALLINT:
             case Types::INTEGER:
-                $value = (int) $value;
+                $value = (int)$value;
 
                 break;
             case Types::BIGINT:
-                $value = (string) $value;
+                $value = (string)$value;
 
                 break;
             case Types::FLOAT:
             case Types::DECIMAL:
-                $value = (float) $value;
+                $value = (float)$value;
 
                 break;
             default:

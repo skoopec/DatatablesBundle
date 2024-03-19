@@ -11,12 +11,17 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
 use Sg\DatatablesBundle\Datatable\Extension\Buttons;
 use Sg\DatatablesBundle\Datatable\Extension\Responsive;
 use Sg\DatatablesBundle\Datatable\Extension\RowGroup;
 use Sg\DatatablesBundle\Datatable\Extension\Select;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function is_array;
 
+/**
+ * Class Extensions
+ */
 class Extensions
 {
     use OptionsTrait;
@@ -75,10 +80,10 @@ class Extensions
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'buttons' => null,
+            'buttons'    => null,
             'responsive' => null,
-            'select' => null,
-            'row_group' => null,
+            'select'     => null,
+            'row_group'  => null,
         ]);
 
         $resolver->setAllowedTypes('buttons', ['null', 'array', 'bool']);
@@ -105,11 +110,12 @@ class Extensions
      * @param array|bool|null $buttons
      *
      * @return $this
+     * @throws Exception
      */
     public function setButtons($buttons)
     {
-        if (\is_array($buttons)) {
-            $newButton = new Buttons();
+        if (is_array($buttons)) {
+            $newButton     = new Buttons();
             $this->buttons = $newButton->set($buttons);
         } else {
             $this->buttons = $buttons;
@@ -130,11 +136,12 @@ class Extensions
      * @param array|bool|null $responsive
      *
      * @return $this
+     * @throws Exception
      */
     public function setResponsive($responsive)
     {
-        if (\is_array($responsive)) {
-            $newResponsive = new Responsive();
+        if (is_array($responsive)) {
+            $newResponsive    = new Responsive();
             $this->responsive = $newResponsive->set($responsive);
         } else {
             $this->responsive = $responsive;
@@ -155,11 +162,12 @@ class Extensions
      * @param array|bool|null $select
      *
      * @return $this
+     * @throws Exception
      */
     public function setSelect($select)
     {
-        if (\is_array($select)) {
-            $newSelect = new Select();
+        if (is_array($select)) {
+            $newSelect    = new Select();
             $this->select = $newSelect->set($select);
         } else {
             $this->select = $select;
@@ -179,14 +187,14 @@ class Extensions
     /**
      * @param array|bool|null $rowGroup
      *
-     * @throws \Exception
-     *
      * @return $this
+     * @throws Exception
+     *
      */
     public function setRowGroup($rowGroup)
     {
-        if (\is_array($rowGroup)) {
-            $newRowGroup = new RowGroup();
+        if (is_array($rowGroup)) {
+            $newRowGroup    = new RowGroup();
             $this->rowGroup = $newRowGroup->set($rowGroup);
         } else {
             $this->rowGroup = $rowGroup;

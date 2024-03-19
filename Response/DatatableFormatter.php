@@ -16,7 +16,13 @@ use Sg\DatatablesBundle\Datatable\Column\ColumnInterface;
 use Sg\DatatablesBundle\Datatable\DatatableInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use function array_key_exists;
+use function call_user_func;
+use function is_callable;
 
+/**
+ * Class DatatableFormatter
+ */
 class DatatableFormatter
 {
     /**
@@ -51,7 +57,7 @@ class DatatableFormatter
     public function runFormatter(Paginator $paginator, DatatableInterface $datatable)
     {
         $lineFormatter = $datatable->getLineFormatter();
-        $columns = $datatable->getColumnBuilder()->getColumns();
+        $columns       = $datatable->getColumnBuilder()->getColumns();
 
         foreach ($paginator as $row) {
             // Adding custom DQL fields make PARTIAL columns stored in key 0
@@ -64,10 +70,8 @@ class DatatableFormatter
             foreach ($columns as $column) {
                 // @noinspection PhpUndefinedMethodInspection
                 if (true === $column->isCustomDql()) {
-                    /** @noinspection PhpUndefinedMethodInspection */
                     $columnAlias = str_replace('.', '_', $column->getData());
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $columnPath = '['.str_replace('.', '][', $column->getData()).']';
+                    $columnPath  = '[' . str_replace('.', '][', $column->getData()) . ']';
                     // @noinspection PhpUndefinedMethodInspection
                     if ($columnAlias !== $column->getData()) {
                         $this->accessor->setValue($row, $columnPath, $row[$columnAlias]);
@@ -78,14 +82,12 @@ class DatatableFormatter
 
             // 1. Set (if necessary) the custom data source for the Columns with a 'data' option
             foreach ($columns as $column) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $dql = $column->getDql();
-                /** @noinspection PhpUndefinedMethodInspection */
+                $dql  = $column->getDql();
                 $data = $column->getData();
 
                 // @noinspection PhpUndefinedMethodInspection
                 if (false === $column->isAssociation()) {
-                    if (null !== $dql && $dql !== $data && false === \array_key_exists($data, $row)) {
+                    if (null !== $dql && $dql !== $data && false === array_key_exists($data, $row)) {
                         $row[$data] = $row[$dql];
                         unset($row[$dql]);
                     }
@@ -93,8 +95,8 @@ class DatatableFormatter
             }
 
             // 2. Call the the lineFormatter to format row items
-            if (null !== $lineFormatter && \is_callable($lineFormatter)) {
-                $row = \call_user_func($datatable->getLineFormatter(), $row);
+            if (null !== $lineFormatter && is_callable($lineFormatter)) {
+                $row = call_user_func($datatable->getLineFormatter(), $row);
             }
 
             /** @var ColumnInterface $column */
@@ -106,7 +108,7 @@ class DatatableFormatter
             }
 
             foreach ($columns as $column) {
-                if (! $column->getSentInResponse()) {
+                if (!$column->getSentInResponse()) {
                     unset($row[$column->getDql()]);
                 }
             }

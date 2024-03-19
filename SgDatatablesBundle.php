@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * Class SgDatatablesBundle
+ */
 class SgDatatablesBundle extends Bundle
 {
 }

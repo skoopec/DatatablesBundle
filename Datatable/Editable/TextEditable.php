@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle\Datatable\Editable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class TextEditable
+ */
 class TextEditable extends AbstractEditable
 {
     /**
@@ -57,7 +60,7 @@ class TextEditable extends AbstractEditable
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'clear' => true,
+            'clear'       => true,
             'placeholder' => null,
         ]);
 

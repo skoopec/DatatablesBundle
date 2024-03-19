@@ -12,7 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable\Editable;
 
 /**
- * Interface EditableInterface.
+ * Interface EditableInterface
  */
 interface EditableInterface
 {

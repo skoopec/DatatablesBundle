@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sg\DatatablesBundle\Datatable\Column\ColumnBuilder;
 
 /**
- * Interface DatatableInterface.
+ * Interface DatatableInterface
  */
 interface DatatableInterface
 {
@@ -97,7 +97,7 @@ interface DatatableInterface
     /**
      * Help function to create an option array for filtering.
      *
-     * @param array  $entities
+     * @param array $entities
      * @param string $keyFrom
      * @param string $valueFrom
      *

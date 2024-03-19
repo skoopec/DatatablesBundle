@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -16,7 +16,12 @@ use Exception;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function call_user_func;
+use function count;
 
+/**
+ * Class AttributeColumn
+ */
 class AttributeColumn extends AbstractColumn
 {
     // The AttributeColumn is filterable.
@@ -39,9 +44,7 @@ class AttributeColumn extends AbstractColumn
      */
     public function renderSingleField(array &$row)
     {
-        $renderAttributes = [];
-
-        $renderAttributes = \call_user_func($this->attributes, $row);
+        $renderAttributes = call_user_func($this->attributes, $row);
 
         $path = Helper::getDataPropertyPath($this->data);
 
@@ -49,7 +52,7 @@ class AttributeColumn extends AbstractColumn
             $this->getCellContentTemplate(),
             [
                 'attributes' => $renderAttributes,
-                'data' => $this->accessor->getValue($row, $path),
+                'data'       => $this->accessor->getValue($row, $path),
             ]
         );
 
@@ -62,7 +65,7 @@ class AttributeColumn extends AbstractColumn
     public function renderToMany(array &$row)
     {
         $value = null;
-        $path = Helper::getDataPropertyPath($this->data, $value);
+        $path  = Helper::getDataPropertyPath($this->data, $value);
 
         if ($this->accessor->isReadable($row, $path)) {
             if ($this->isEditableContentRequired($row)) {
@@ -72,9 +75,9 @@ class AttributeColumn extends AbstractColumn
 
                 $entries = $this->accessor->getValue($row, $path);
 
-                if (\count($entries) > 0) {
+                if (count($entries) > 0) {
                     foreach ($entries as $key => $entry) {
-                        $currentPath = $path.'['.$key.']'.$value;
+                        $currentPath       = $path . '[' . $key . ']' . $value;
                         $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
                         $content = $this->renderTemplate(
@@ -129,7 +132,7 @@ class AttributeColumn extends AbstractColumn
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'filter' => [TextFilter::class, []],
+            'filter'     => [TextFilter::class, []],
             'attributes' => null,
         ]);
 
@@ -140,7 +143,7 @@ class AttributeColumn extends AbstractColumn
     }
 
     /**
-     * @return Attributes[]
+     * @return Closure
      */
     public function getAttributes()
     {
@@ -150,9 +153,9 @@ class AttributeColumn extends AbstractColumn
     /**
      * @param Closure $attributes
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setAttributes($attributes)
     {

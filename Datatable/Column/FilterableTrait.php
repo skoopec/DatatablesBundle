@@ -14,7 +14,13 @@ namespace Sg\DatatablesBundle\Datatable\Column;
 use Exception;
 use Sg\DatatablesBundle\Datatable\Factory;
 use Sg\DatatablesBundle\Datatable\Filter\FilterInterface;
+use function count;
+use function is_array;
+use function is_string;
 
+/**
+ * Trait FilterableTrait
+ */
 trait FilterableTrait
 {
     /**
@@ -42,25 +48,25 @@ trait FilterableTrait
     /**
      * Set Filter instance.
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setFilter(array $filterClassAndOptions)
     {
-        if (2 !== \count($filterClassAndOptions)) {
+        if (2 !== count($filterClassAndOptions)) {
             throw new Exception('AbstractColumn::setFilter(): Two arguments expected.');
         }
 
-        if (! isset($filterClassAndOptions[0]) || ! \is_string($filterClassAndOptions[0]) && ! $filterClassAndOptions[0] instanceof FilterInterface) {
+        if (!isset($filterClassAndOptions[0]) || !is_string($filterClassAndOptions[0]) && !$filterClassAndOptions[0] instanceof FilterInterface) {
             throw new Exception('AbstractColumn::setFilter(): Set a Filter class.');
         }
 
-        if (! isset($filterClassAndOptions[1]) || ! \is_array($filterClassAndOptions[1])) {
+        if (!isset($filterClassAndOptions[1]) || !is_array($filterClassAndOptions[1])) {
             throw new Exception('AbstractColumn::setFilter(): Set an options array.');
         }
 
-        $newFilter = Factory::create($filterClassAndOptions[0], FilterInterface::class);
+        $newFilter    = Factory::create($filterClassAndOptions[0], FilterInterface::class);
         $this->filter = $newFilter->set($filterClassAndOptions[1]);
 
         return $this;

@@ -13,7 +13,11 @@ namespace Sg\DatatablesBundle\Datatable\Extension;
 
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function is_array;
 
+/**
+ * Class Button
+ */
 class Button
 {
     use OptionsTrait;
@@ -134,18 +138,18 @@ class Button
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'action' => null,
-            'available' => null,
-            'class_name' => null,
-            'destroy' => null,
-            'enabled' => null,
-            'extend' => null,
-            'init' => null,
-            'key' => null,
-            'name' => null,
-            'namespace' => null,
-            'text' => null,
-            'title_attr' => null,
+            'action'         => null,
+            'available'      => null,
+            'class_name'     => null,
+            'destroy'        => null,
+            'enabled'        => null,
+            'extend'         => null,
+            'init'           => null,
+            'key'            => null,
+            'name'           => null,
+            'namespace'      => null,
+            'text'           => null,
+            'title_attr'     => null,
             'button_options' => null,
         ]);
 
@@ -182,10 +186,11 @@ class Button
      * @param array|null $action
      *
      * @return $this
+     * @throws \Exception
      */
     public function setAction($action)
     {
-        if (\is_array($action)) {
+        if (is_array($action)) {
             $this->validateArrayForTemplateAndOther($action);
         }
 
@@ -206,10 +211,11 @@ class Button
      * @param array|null $available
      *
      * @return $this
+     * @throws \Exception
      */
     public function setAvailable($available)
     {
-        if (\is_array($available)) {
+        if (is_array($available)) {
             $this->validateArrayForTemplateAndOther($available);
         }
 
@@ -250,10 +256,11 @@ class Button
      * @param array|null $destroy
      *
      * @return $this
+     * @throws \Exception
      */
     public function setDestroy($destroy)
     {
-        if (\is_array($destroy)) {
+        if (is_array($destroy)) {
             $this->validateArrayForTemplateAndOther($destroy);
         }
 
@@ -314,10 +321,11 @@ class Button
      * @param array|null $init
      *
      * @return $this
+     * @throws \Exception
      */
     public function setInit($init)
     {
-        if (\is_array($init)) {
+        if (is_array($init)) {
             $this->validateArrayForTemplateAndOther($init);
         }
 

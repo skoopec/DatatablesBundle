@@ -15,7 +15,12 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function count;
+use function is_array;
 
+/**
+ * Class SelectFilter
+ */
 class SelectFilter extends AbstractFilter
 {
     /**
@@ -60,7 +65,7 @@ class SelectFilter extends AbstractFilter
     public function addAndExpression(Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $searchTypeOfField, &$parameterCounter)
     {
         $searchValues = explode(',', $searchValue);
-        if (true === $this->multiple && \is_array($searchValues) && \count($searchValues) > 1) {
+        if (true === $this->multiple && is_array($searchValues) && count($searchValues) > 1) {
             $orExpr = $qb->expr()->orX();
 
             foreach ($searchValues as $searchValue) {
@@ -93,8 +98,8 @@ class SelectFilter extends AbstractFilter
 
         $resolver->setDefaults([
             'select_search_types' => [],
-            'select_options' => [],
-            'multiple' => false,
+            'select_options'      => [],
+            'multiple'            => false,
         ]);
 
         $resolver->setAllowedTypes('select_search_types', 'array');
@@ -173,10 +178,10 @@ class SelectFilter extends AbstractFilter
      */
     private function setSelectSearchType(string $searchValue): void
     {
-        $searchTypesCount = \count($this->selectSearchTypes);
+        $searchTypesCount = count($this->selectSearchTypes);
 
         if ($searchTypesCount > 0) {
-            if ($searchTypesCount === \count($this->selectOptions)) {
+            if ($searchTypesCount === count($this->selectOptions)) {
                 $this->searchType = $this->selectSearchTypes[$searchValue];
             } else {
                 throw new Exception('SelectFilter::setSelectSearchType(): The search types array is not valid.');

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
+/** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -16,7 +17,12 @@ use Sg\DatatablesBundle\Datatable\Editable\EditableInterface;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function count;
+use function is_string;
 
+/**
+ * Class DateTimeColumn
+ */
 class DateTimeColumn extends AbstractColumn
 {
     use EditableTrait;
@@ -71,14 +77,14 @@ class DateTimeColumn extends AbstractColumn
     public function renderToMany(array &$row)
     {
         $value = null;
-        $path = Helper::getDataPropertyPath($this->data, $value);
+        $path  = Helper::getDataPropertyPath($this->data, $value);
 
         if ($this->accessor->isReadable($row, $path)) {
             $entries = $this->accessor->getValue($row, $path);
 
-            if (null !== $entries && \count($entries) > 0) {
+            if (null !== $entries && count($entries) > 0) {
                 foreach ($entries as $key => $entry) {
-                    $currentPath = $path.'['.$key.']'.$value;
+                    $currentPath       = $path . '[' . $key . ']' . $value;
                     $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
                     if (true === $this->isEditableContentRequired($row)) {
@@ -118,10 +124,10 @@ class DateTimeColumn extends AbstractColumn
                 '@SgDatatables/column/column_post_create_dt.js.twig',
                 [
                     'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
-                    'editable_options' => $this->editable,
-                    'entity_class_name' => $this->getEntityClassName(),
-                    'column_dql' => $this->dql,
-                    'original_type_of_field' => $this->getOriginalTypeOfField(),
+                    'editable_options'               => $this->editable,
+                    'entity_class_name'              => $this->getEntityClassName(),
+                    'column_dql'                     => $this->dql,
+                    'original_type_of_field'         => $this->getOriginalTypeOfField(),
                 ]
             );
         }
@@ -142,9 +148,9 @@ class DateTimeColumn extends AbstractColumn
 
         $resolver->setDefaults([
             'date_format' => 'lll',
-            'timeago' => false,
-            'filter' => [TextFilter::class, []],
-            'editable' => null,
+            'timeago'     => false,
+            'filter'      => [TextFilter::class, []],
+            'editable'    => null,
         ]);
 
         $resolver->setAllowedTypes('date_format', 'string');
@@ -174,13 +180,13 @@ class DateTimeColumn extends AbstractColumn
      *
      * @param string $dateFormat
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setDateFormat($dateFormat)
     {
-        if (empty($dateFormat) || ! \is_string($dateFormat)) {
+        if (empty($dateFormat) || !is_string($dateFormat)) {
             throw new Exception('DateTimeColumn::setDateFormat(): A non-empty string is expected.');
         }
 
@@ -225,20 +231,20 @@ class DateTimeColumn extends AbstractColumn
     private function renderTemplate($data, $pk = null, $path = null)
     {
         $renderVars = [
-            'data' => $data,
+            'data'            => $data,
             'default_content' => $this->getDefaultContent(),
-            'date_format' => $this->dateFormat,
-            'timeago' => $this->timeago,
-            'datatable_name' => $this->getDatatableName(),
-            'row_id' => Helper::generateUniqueID(),
+            'date_format'     => $this->dateFormat,
+            'timeago'         => $this->timeago,
+            'datatable_name'  => $this->getDatatableName(),
+            'row_id'          => Helper::generateUniqueID(),
         ];
 
         // editable vars
         if (null !== $pk) {
             $renderVars = array_merge($renderVars, [
                 'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
-                'pk' => $pk,
-                'path' => $path,
+                'pk'                             => $pk,
+                'path'                           => $path,
             ]);
         }
 

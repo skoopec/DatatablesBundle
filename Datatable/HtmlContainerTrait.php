@@ -11,6 +11,9 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+/**
+ * Trait HtmlContainerTrait
+ */
 trait HtmlContainerTrait
 {
     /**

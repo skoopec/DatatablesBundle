@@ -14,7 +14,11 @@ namespace Sg\DatatablesBundle\Datatable\Editable;
 use Closure;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function call_user_func;
 
+/**
+ * Class AbstractEditable
+ */
 abstract class AbstractEditable implements EditableInterface
 {
     use OptionsTrait;
@@ -121,7 +125,7 @@ abstract class AbstractEditable implements EditableInterface
     public function callEditableIfClosure(array $row = [])
     {
         if ($this->editableIf instanceof Closure) {
-            return \call_user_func($this->editableIf, $row);
+            return call_user_func($this->editableIf, $row);
         }
 
         return true;
@@ -153,16 +157,16 @@ abstract class AbstractEditable implements EditableInterface
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'url' => 'sg_datatables_edit',
-            'params' => null,
+            'url'           => 'sg_datatables_edit',
+            'params'        => null,
             'default_value' => null,
-            'empty_class' => 'editable-empty',
-            'empty_text' => 'Empty',
-            'highlight' => '#FFFF80',
-            'mode' => 'popup',
-            'name' => null,
-            'pk' => 'id',
-            'editable_if' => null,
+            'empty_class'   => 'editable-empty',
+            'empty_text'    => 'Empty',
+            'highlight'     => '#FFFF80',
+            'mode'          => 'popup',
+            'name'          => null,
+            'pk'            => 'id',
+            'editable_if'   => null,
         ]);
 
         $resolver->setAllowedTypes('url', 'string');

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -12,6 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use LogicException;
 use Sg\DatatablesBundle\Datatable\Column\ColumnBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -22,7 +23,11 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface as LegacyTranslatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use function get_class;
 
+/**
+ * Class AbstractDatatable
+ */
 abstract class AbstractDatatable implements DatatableInterface
 {
     /**
@@ -148,6 +153,7 @@ abstract class AbstractDatatable implements DatatableInterface
 
     /**
      * @throws LogicException
+     * @noinspection DuplicatedCode
      */
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
@@ -166,26 +172,27 @@ abstract class AbstractDatatable implements DatatableInterface
         }
 
         $this->authorizationChecker = $authorizationChecker;
-        $this->securityToken = $securityToken;
+        $this->securityToken        = $securityToken;
 
-        if (! ($translator instanceof LegacyTranslatorInterface) && ! ($translator instanceof TranslatorInterface)) {
-            throw new \InvalidArgumentException(sprintf('The $translator argument of %s must be an instance of %s or %s, a %s was given.', static::class, LegacyTranslatorInterface::class, TranslatorInterface::class, \get_class($translator)));
+        if (!($translator instanceof LegacyTranslatorInterface) && !($translator instanceof TranslatorInterface)) {
+            throw new InvalidArgumentException(sprintf('The $translator argument of %s must be an instance of %s or %s, a %s was given.', static::class, LegacyTranslatorInterface::class,
+                TranslatorInterface::class, get_class($translator)));
         }
         $this->translator = $translator;
-        $this->router = $router;
-        $this->em = $em;
-        $this->twig = $twig;
+        $this->router     = $router;
+        $this->em         = $em;
+        $this->twig       = $twig;
 
-        $metadata = $em->getClassMetadata($this->getEntity());
+        $metadata            = $em->getClassMetadata($this->getEntity());
         $this->columnBuilder = new ColumnBuilder($metadata, $twig, $router, $this->getName(), $em);
 
-        $this->ajax = new Ajax();
-        $this->options = new Options();
-        $this->features = new Features();
-        $this->callbacks = new Callbacks();
-        $this->events = new Events();
+        $this->ajax       = new Ajax();
+        $this->options    = new Options();
+        $this->features   = new Features();
+        $this->callbacks  = new Callbacks();
+        $this->events     = new Events();
         $this->extensions = new Extensions();
-        $this->language = new Language();
+        $this->language   = new Language();
 
         $this->accessor = PropertyAccess::createPropertyAccessor();
     }
@@ -303,7 +310,7 @@ abstract class AbstractDatatable implements DatatableInterface
      */
     public function getUniqueName()
     {
-        return $this->getName().($this->getUniqueId() > 1 ? '-'.$this->getUniqueId() : '');
+        return $this->getName() . ($this->getUniqueId() > 1 ? '-' . $this->getUniqueId() : '');
     }
 
     //-------------------------------------------------

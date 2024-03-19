@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle\Datatable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class Features
+ */
 class Features
 {
     use OptionsTrait;
@@ -137,17 +140,17 @@ class Features
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'auto_width' => null,
-            'defer_render' => null,
-            'info' => null,
+            'auto_width'    => null,
+            'defer_render'  => null,
+            'info'          => null,
             'length_change' => null,
-            'ordering' => null,
-            'paging' => null,
-            'processing' => null,
-            'scroll_x' => null,
-            'scroll_y' => null,
-            'searching' => null,
-            'state_save' => null,
+            'ordering'      => null,
+            'paging'        => null,
+            'processing'    => null,
+            'scroll_x'      => null,
+            'scroll_y'      => null,
+            'searching'     => null,
+            'state_save'    => null,
         ]);
 
         $resolver->setAllowedTypes('auto_width', ['null', 'bool']);

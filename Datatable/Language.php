@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle\Datatable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class Language
+ */
 class Language
 {
     use OptionsTrait;
@@ -126,8 +129,8 @@ class Language
     {
         $resolver->setDefaults([
             'cdn_language_by_locale' => false,
-            'language_by_locale' => false,
-            'language' => null,
+            'language_by_locale'     => false,
+            'language'               => null,
         ]);
 
         $resolver->setAllowedTypes('cdn_language_by_locale', 'bool');

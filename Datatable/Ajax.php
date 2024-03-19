@@ -12,7 +12,11 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function is_array;
 
+/**
+ * Class Ajax
+ */
 class Ajax
 {
     use OptionsTrait;
@@ -70,9 +74,9 @@ class Ajax
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'url' => null,
-            'method' => 'GET',
-            'data' => null,
+            'url'      => null,
+            'method'   => 'GET',
+            'data'     => null,
             'pipeline' => 0,
         ]);
 
@@ -143,7 +147,7 @@ class Ajax
     /**
      * @param $method
      *
-     * @return \Sg\DatatablesBundle\Datatable\Ajax
+     * @return Ajax
      *
      * @deprecated Use setMethod() instead
      */
@@ -157,7 +161,7 @@ class Ajax
      */
     public function getData()
     {
-        if (\is_array($this->data)) {
+        if (is_array($this->data)) {
             return $this->optionToJson($this->data);
         }
 

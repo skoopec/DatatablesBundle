@@ -14,6 +14,9 @@ namespace Sg\DatatablesBundle\Datatable\Extension;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class Select
+ */
 class Select
 {
     use OptionsTrait;
@@ -82,12 +85,12 @@ class Select
     {
         $resolver->setDefaults(
             [
-                'blurable' => null,
+                'blurable'   => null,
                 'class_name' => null,
-                'info' => null,
-                'items' => null,
-                'selector' => null,
-                'style' => null,
+                'info'       => null,
+                'items'      => null,
+                'selector'   => null,
+                'style'      => null,
             ]
         );
 

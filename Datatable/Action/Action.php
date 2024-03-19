@@ -17,7 +17,12 @@ use Sg\DatatablesBundle\Datatable\HtmlContainerTrait;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Sg\DatatablesBundle\Datatable\RenderIfTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function array_key_exists;
+use function is_array;
 
+/**
+ * Class Action
+ */
 class Action
 {
     /*
@@ -139,19 +144,19 @@ class Action
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'route' => null,
-            'route_parameters' => null,
-            'icon' => null,
-            'label' => null,
-            'confirm' => false,
-            'confirm_message' => null,
-            'attributes' => null,
-            'button' => false,
-            'button_value' => null,
+            'route'               => null,
+            'route_parameters'    => null,
+            'icon'                => null,
+            'label'               => null,
+            'confirm'             => false,
+            'confirm_message'     => null,
+            'attributes'          => null,
+            'button'              => false,
+            'button_value'        => null,
             'button_value_prefix' => false,
-            'render_if' => null,
-            'start_html' => null,
-            'end_html' => null,
+            'render_if'           => null,
+            'start_html'          => null,
+            'end_html'            => null,
         ]);
 
         $resolver->setAllowedTypes('route', ['null', 'string']);
@@ -306,18 +311,18 @@ class Action
     /**
      * @param array|Closure|null $attributes
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setAttributes($attributes)
     {
-        if (\is_array($attributes)) {
-            if (\array_key_exists('href', $attributes)) {
+        if (is_array($attributes)) {
+            if (array_key_exists('href', $attributes)) {
                 throw new Exception('Action::setAttributes(): The href attribute is not allowed in this context.');
             }
 
-            if (\array_key_exists('value', $attributes)) {
+            if (array_key_exists('value', $attributes)) {
                 throw new Exception('Action::setAttributes(): The value attribute is not allowed in this context.');
             }
         }

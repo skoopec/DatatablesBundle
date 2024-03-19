@@ -12,7 +12,11 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Closure;
+use function call_user_func;
 
+/**
+ * Trait AddIfTrait
+ */
 trait AddIfTrait
 {
     /**
@@ -34,7 +38,7 @@ trait AddIfTrait
     public function callAddIfClosure()
     {
         if ($this->addIf instanceof Closure) {
-            return \call_user_func($this->addIf);
+            return call_user_func($this->addIf);
         }
 
         return true;

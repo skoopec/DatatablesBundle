@@ -12,7 +12,11 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Closure;
+use function call_user_func;
 
+/**
+ * Trait RenderIfTrait
+ */
 trait RenderIfTrait
 {
     /**
@@ -34,7 +38,7 @@ trait RenderIfTrait
     public function callRenderIfClosure(array $row = [])
     {
         if ($this->renderIf instanceof Closure) {
-            return \call_user_func($this->renderIf, $row);
+            return call_user_func($this->renderIf, $row);
         }
 
         return true;

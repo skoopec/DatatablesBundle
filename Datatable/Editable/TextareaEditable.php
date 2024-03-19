@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle\Datatable\Editable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class TextareaEditable
+ */
 class TextareaEditable extends AbstractEditable
 {
     /**

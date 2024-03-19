@@ -14,7 +14,12 @@ namespace Sg\DatatablesBundle\Datatable\Extension;
 use Exception;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function count;
+use function is_array;
 
+/**
+ * Class Buttons
+ */
 class Buttons
 {
     use OptionsTrait;
@@ -54,7 +59,7 @@ class Buttons
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'show_buttons' => null,
+            'show_buttons'   => null,
             'create_buttons' => null,
         ]);
 
@@ -73,7 +78,7 @@ class Buttons
      */
     public function getShowButtons()
     {
-        if (\is_array($this->showButtons)) {
+        if (is_array($this->showButtons)) {
             return $this->optionToJson($this->showButtons);
         }
 
@@ -103,16 +108,16 @@ class Buttons
     /**
      * @param array|null $createButtons
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setCreateButtons($createButtons)
     {
-        if (\is_array($createButtons)) {
-            if (\count($createButtons) > 0) {
+        if (is_array($createButtons)) {
+            if (count($createButtons) > 0) {
                 foreach ($createButtons as $button) {
-                    $newButton = new Button();
+                    $newButton             = new Button();
                     $this->createButtons[] = $newButton->set($button);
                 }
             } else {

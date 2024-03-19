@@ -12,7 +12,12 @@
 namespace Sg\DatatablesBundle\Datatable\Action;
 
 use Exception;
+use function array_key_exists;
+use function is_array;
 
+/**
+ * Class MultiselectAction
+ */
 class MultiselectAction extends Action
 {
     //-------------------------------------------------
@@ -22,21 +27,21 @@ class MultiselectAction extends Action
     /**
      * @param array|null $attributes
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setAttributes($attributes)
     {
-        $value = 'sg-datatables-'.$this->datatableName.'-multiselect-action';
+        $value = 'sg-datatables-' . $this->datatableName . '-multiselect-action';
 
-        if (\is_array($attributes)) {
-            if (\array_key_exists('href', $attributes)) {
+        if (is_array($attributes)) {
+            if (array_key_exists('href', $attributes)) {
                 throw new Exception('MultiselectAction::setAttributes(): The href attribute is not allowed in this context.');
             }
 
-            if (\array_key_exists('class', $attributes)) {
-                $attributes['class'] = $value.' '.$attributes['class'];
+            if (array_key_exists('class', $attributes)) {
+                $attributes['class'] = $value . ' ' . $attributes['class'];
             } else {
                 $attributes['class'] = $value;
             }

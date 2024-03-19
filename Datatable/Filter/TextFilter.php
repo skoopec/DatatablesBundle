@@ -14,6 +14,9 @@ namespace Sg\DatatablesBundle\Datatable\Filter;
 use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * Class TextFilter
+ */
 class TextFilter extends AbstractFilter
 {
     //-------------------------------------------------

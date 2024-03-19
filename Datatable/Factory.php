@@ -12,7 +12,11 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Exception;
+use function is_string;
 
+/**
+ * Class Factory
+ */
 class Factory
 {
     /**
@@ -22,7 +26,7 @@ class Factory
      */
     public static function create($class, $interface)
     {
-        if (empty($class) || ! \is_string($class) && ! $class instanceof $interface) {
+        if (empty($class) || !is_string($class) && !$class instanceof $interface) {
             throw new Exception("Factory::create(): String or {$interface} expected.");
         }
 
@@ -30,10 +34,10 @@ class Factory
             return $class;
         }
 
-        if (\is_string($class) && class_exists($class)) {
+        if (is_string($class) && class_exists($class)) {
             $instance = new $class();
 
-            if (! $instance instanceof $interface) {
+            if (!$instance instanceof $interface) {
                 throw new Exception("Factory::create(): String or {$interface} expected.");
             }
 

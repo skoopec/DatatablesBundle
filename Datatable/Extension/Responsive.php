@@ -14,7 +14,12 @@ namespace Sg\DatatablesBundle\Datatable\Extension;
 use Exception;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function in_array;
+use function is_array;
 
+/**
+ * Class Responsive
+ */
 class Responsive
 {
     use OptionsTrait;
@@ -67,24 +72,24 @@ class Responsive
     /**
      * @param array|bool $details
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setDetails($details)
     {
-        if (\is_array($details)) {
+        if (is_array($details)) {
             foreach ($details as $key => $value) {
-                if (false === \in_array($key, ['type', 'target', 'renderer', 'display'], true)) {
+                if (false === in_array($key, ['type', 'target', 'renderer', 'display'], true)) {
                     throw new Exception("Responsive::setDetails(): {$key} is not an valid option.");
                 }
             }
 
-            if (\is_array($details['renderer'])) {
+            if (is_array($details['renderer'])) {
                 $this->validateArrayForTemplateAndOther($details['renderer']);
             }
 
-            if (\is_array($details['display'])) {
+            if (is_array($details['display'])) {
                 $this->validateArrayForTemplateAndOther($details['display']);
             }
         }

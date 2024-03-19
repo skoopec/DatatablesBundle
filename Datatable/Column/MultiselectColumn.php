@@ -15,7 +15,14 @@ use Exception;
 use Sg\DatatablesBundle\Datatable\Action\MultiselectAction;
 use Sg\DatatablesBundle\Datatable\RenderIfTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function array_key_exists;
+use function count;
+use function is_array;
+use function is_bool;
 
+/**
+ * Class MultiselectColumn
+ */
 class MultiselectColumn extends ActionColumn
 {
     // Render a Checkbox only if conditions are TRUE.
@@ -88,21 +95,21 @@ class MultiselectColumn extends ActionColumn
     {
         $value = $row[$this->value];
 
-        if (\is_bool($value)) {
-            $value = (int) $value;
+        if (is_bool($value)) {
+            $value = (int)$value;
         }
 
         if (true === $this->valuePrefix) {
-            $value = 'sg-datatables-'.$this->getDatatableName().'-checkbox-'.$value;
+            $value = 'sg-datatables-' . $this->getDatatableName() . '-checkbox-' . $value;
         }
 
         $row[$this->getIndex()] = $this->twig->render(
             $this->getCellContentTemplate(),
             [
-                'attributes' => $this->attributes,
-                'value' => $value,
-                'start_html' => $this->startHtml,
-                'end_html' => $this->endHtml,
+                'attributes'     => $this->attributes,
+                'value'          => $value,
+                'start_html'     => $this->startHtml,
+                'end_html'       => $this->endHtml,
                 'render_if_cbox' => $row['sg_datatables_cbox'],
             ]
         );
@@ -149,11 +156,11 @@ class MultiselectColumn extends ActionColumn
         $resolver->remove('title');
 
         $resolver->setDefaults([
-            'attributes' => null,
-            'value' => 'id',
-            'value_prefix' => false,
+            'attributes'           => null,
+            'value'                => 'id',
+            'value_prefix'         => false,
             'render_actions_to_id' => null,
-            'render_if' => null,
+            'render_if'            => null,
         ]);
 
         $resolver->setAllowedTypes('attributes', ['null', 'array']);
@@ -170,13 +177,13 @@ class MultiselectColumn extends ActionColumn
     //-------------------------------------------------
 
     /**
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setActions(array $actions)
     {
-        if (\count($actions) > 0) {
+        if (count($actions) > 0) {
             foreach ($actions as $action) {
                 $this->addAction($action);
             }
@@ -190,11 +197,14 @@ class MultiselectColumn extends ActionColumn
     /**
      * Add action.
      *
+     * @param array $action
+     *
      * @return $this
+     * @throws Exception
      */
     public function addAction(array $action)
     {
-        $newAction = new MultiselectAction($this->datatableName);
+        $newAction       = new MultiselectAction($this->datatableName);
         $this->actions[] = $newAction->set($action);
 
         return $this;
@@ -211,35 +221,35 @@ class MultiselectColumn extends ActionColumn
     /**
      * @param array|null $attributes
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setAttributes($attributes)
     {
-        $value = 'sg-datatables-'.$this->datatableName.'-multiselect-checkbox';
+        $value = 'sg-datatables-' . $this->datatableName . '-multiselect-checkbox';
 
-        if (\is_array($attributes)) {
-            if (\array_key_exists('type', $attributes)) {
+        if (is_array($attributes)) {
+            if (array_key_exists('type', $attributes)) {
                 throw new Exception('MultiselectColumn::setAttributes(): The type attribute is not supported.');
             }
 
-            if (\array_key_exists('value', $attributes)) {
+            if (array_key_exists('value', $attributes)) {
                 throw new Exception('MultiselectColumn::setAttributes(): The value attribute is not supported.');
             }
 
-            if (\array_key_exists('name', $attributes)) {
-                $attributes['name'] = $attributes['name'].'[]';
+            if (array_key_exists('name', $attributes)) {
+                $attributes['name'] = $attributes['name'] . '[]';
             } else {
-                $attributes['name'] = $value.'[]';
+                $attributes['name'] = $value . '[]';
             }
-            if (\array_key_exists('class', $attributes)) {
-                $attributes['class'] = $value.' '.$attributes['class'];
+            if (array_key_exists('class', $attributes)) {
+                $attributes['class'] = $value . ' ' . $attributes['class'];
             } else {
                 $attributes['class'] = $value;
             }
         } else {
-            $attributes['name'] = $value.'[]';
+            $attributes['name']  = $value . '[]';
             $attributes['class'] = $value;
         }
 

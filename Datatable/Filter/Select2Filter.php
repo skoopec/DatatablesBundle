@@ -15,6 +15,9 @@ use Exception;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class Select2Filter
+ */
 class Select2Filter extends SelectFilter
 {
     /**
@@ -99,11 +102,11 @@ class Select2Filter extends SelectFilter
         $resolver->setDefaults([
             'placeholder' => null,
             'allow_clear' => null,
-            'tags' => null,
-            'language' => null,
-            'url' => null,
-            'delay' => 250,
-            'cache' => true,
+            'tags'        => null,
+            'language'    => null,
+            'url'         => null,
+            'delay'       => 250,
+            'cache'       => true,
         ]);
 
         $resolver->setAllowedTypes('placeholder', ['string', 'null']);

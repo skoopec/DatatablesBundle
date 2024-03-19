@@ -15,6 +15,9 @@ use Exception;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class VirtualColumn
+ */
 class VirtualColumn extends Column
 {
     /**
@@ -47,9 +50,9 @@ class VirtualColumn extends Column
         $resolver->remove('editable');
 
         $resolver->setDefaults([
-            'orderable' => false,
-            'searchable' => false,
-            'order_column' => null,
+            'orderable'     => false,
+            'searchable'    => false,
+            'order_column'  => null,
             'search_column' => null,
         ]);
 

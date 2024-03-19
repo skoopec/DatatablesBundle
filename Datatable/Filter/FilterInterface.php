@@ -15,7 +15,7 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * Interface FilterInterface.
+ * Interface FilterInterface
  */
 interface FilterInterface
 {
@@ -29,7 +29,7 @@ interface FilterInterface
      *
      * @param string $searchField
      * @param string $searchTypeOfField
-     * @param int    $parameterCounter
+     * @param int $parameterCounter
      *
      * @return Andx
      */

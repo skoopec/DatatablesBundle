@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle\Datatable\Editable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class CombodateEditable
+ */
 class CombodateEditable extends AbstractEditable
 {
     /**
@@ -94,13 +97,13 @@ class CombodateEditable extends AbstractEditable
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'format' => 'YYYY-MM-DD',
+            'format'      => 'YYYY-MM-DD',
             'view_format' => null,
-            'min_year' => 1970,
-            'max_year' => 2035,
+            'min_year'    => 1970,
+            'max_year'    => 2035,
             'minute_step' => 5,
             'second_step' => 1,
-            'smart_days' => false,
+            'smart_days'  => false,
         ]);
 
         $resolver->setAllowedTypes('format', 'string');

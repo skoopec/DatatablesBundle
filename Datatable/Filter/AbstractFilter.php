@@ -18,6 +18,9 @@ use Doctrine\ORM\QueryBuilder;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class AbstractFilter
+ */
 abstract class AbstractFilter implements FilterInterface
 {
     use OptionsTrait;
@@ -93,12 +96,12 @@ abstract class AbstractFilter implements FilterInterface
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'search_type' => 'like',
-            'search_column' => null,
-            'initial_search' => null,
-            'classes' => null,
-            'cancel_button' => false,
-            'placeholder' => true,
+            'search_type'      => 'like',
+            'search_column'    => null,
+            'initial_search'   => null,
+            'classes'          => null,
+            'cancel_button'    => false,
+            'placeholder'      => true,
             'placeholder_text' => null,
         ]);
 
@@ -269,7 +272,7 @@ abstract class AbstractFilter implements FilterInterface
      * @param string $searchType
      * @param string $searchField
      * @param string $searchTypeOfField
-     * @param int    $parameterCounter
+     * @param int $parameterCounter
      *
      * @return Composite
      */
@@ -284,7 +287,7 @@ abstract class AbstractFilter implements FilterInterface
      * @param string $searchType
      * @param string $searchField
      * @param string $searchTypeOfField
-     * @param int    $parameterCounter
+     * @param int $parameterCounter
      *
      * @return Composite
      */
@@ -296,7 +299,7 @@ abstract class AbstractFilter implements FilterInterface
         // Only StringExpression can be searched with LIKE (https://github.com/doctrine/doctrine2/issues/6363)
         if (
             // Not a StringExpression
-            ! preg_match('/text|string|date|time|array|json|json_array|simple_array/', $searchTypeOfField)
+            !preg_match('/text|string|date|time|array|json|json_array|simple_array/', $searchTypeOfField)
             // Subqueries can't be search with LIKE
             || preg_match('/SELECT.+FROM.+/is', $searchField)
             // CASE WHEN can't be search with LIKE
@@ -323,7 +326,7 @@ abstract class AbstractFilter implements FilterInterface
             case 'decimal':
             case 'float':
                 if (is_numeric($searchValue)) {
-                    $searchValue = (float) $searchValue;
+                    $searchValue = (float)$searchValue;
                 } else {
                     $incompatibleTypeOfField = true;
                 }
@@ -333,8 +336,8 @@ abstract class AbstractFilter implements FilterInterface
             case 'bigint':
             case 'smallint':
             case 'boolean':
-                if ($searchValue === (string) (int) $searchValue) {
-                    $searchValue = (int) $searchValue;
+                if ($searchValue === (string)(int)$searchValue) {
+                    $searchValue = (int)$searchValue;
                 } else {
                     $incompatibleTypeOfField = true;
                 }
@@ -347,68 +350,67 @@ abstract class AbstractFilter implements FilterInterface
                     // No result found
                     ? $expr->add($qb->expr()->eq(1, 0))
                     // Column skipped from search
-                    : $expr
-                ;
+                    : $expr;
         }
 
         switch ($searchType) {
             case 'like':
-                $expr->add($qb->expr()->like($searchField, '?'.$parameterCounter));
-                $qb->setParameter($parameterCounter, '%'.$searchValue.'%');
+                $expr->add($qb->expr()->like($searchField, '?' . $parameterCounter));
+                $qb->setParameter($parameterCounter, '%' . $searchValue . '%');
 
                 break;
             case '%like':
-                $expr->add($qb->expr()->like($searchField, '?'.$parameterCounter));
-                $qb->setParameter($parameterCounter, '%'.$searchValue);
+                $expr->add($qb->expr()->like($searchField, '?' . $parameterCounter));
+                $qb->setParameter($parameterCounter, '%' . $searchValue);
 
                 break;
             case 'like%':
-                $expr->add($qb->expr()->like($searchField, '?'.$parameterCounter));
-                $qb->setParameter($parameterCounter, $searchValue.'%');
+                $expr->add($qb->expr()->like($searchField, '?' . $parameterCounter));
+                $qb->setParameter($parameterCounter, $searchValue . '%');
 
                 break;
             case 'notLike':
-                $expr->add($qb->expr()->notLike($searchField, '?'.$parameterCounter));
-                $qb->setParameter($parameterCounter, '%'.$searchValue.'%');
+                $expr->add($qb->expr()->notLike($searchField, '?' . $parameterCounter));
+                $qb->setParameter($parameterCounter, '%' . $searchValue . '%');
 
                 break;
             case 'eq':
-                $expr->add($qb->expr()->eq($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->eq($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, $searchValue);
 
                 break;
             case 'neq':
-                $expr->add($qb->expr()->neq($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->neq($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, $searchValue);
 
                 break;
             case 'lt':
-                $expr->add($qb->expr()->lt($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->lt($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, $searchValue);
 
                 break;
             case 'lte':
-                $expr->add($qb->expr()->lte($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->lte($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, $searchValue);
 
                 break;
             case 'gt':
-                $expr->add($qb->expr()->gt($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->gt($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, $searchValue);
 
                 break;
             case 'gte':
-                $expr->add($qb->expr()->gte($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->gte($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, $searchValue);
 
                 break;
             case 'in':
-                $expr->add($qb->expr()->in($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->in($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, explode(',', $searchValue));
 
                 break;
             case 'notIn':
-                $expr->add($qb->expr()->notIn($searchField, '?'.$parameterCounter));
+                $expr->add($qb->expr()->notIn($searchField, '?' . $parameterCounter));
                 $qb->setParameter($parameterCounter, explode(',', $searchValue));
 
                 break;
@@ -429,7 +431,7 @@ abstract class AbstractFilter implements FilterInterface
      * Get a betweenAndExpression.
      *
      * @param string $searchField
-     * @param int    $parameterCounter
+     * @param int $parameterCounter
      *
      * @return Andx
      */
@@ -438,7 +440,7 @@ abstract class AbstractFilter implements FilterInterface
         ++$parameterCounter;
 
         $k = $parameterCounter + 1;
-        $andExpr->add($qb->expr()->between($searchField, '?'.$parameterCounter, '?'.$k));
+        $andExpr->add($qb->expr()->between($searchField, '?' . $parameterCounter, '?' . $k));
         $qb->setParameter($parameterCounter, $from);
         $qb->setParameter($k, $to);
 

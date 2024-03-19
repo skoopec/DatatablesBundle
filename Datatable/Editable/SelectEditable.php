@@ -14,6 +14,9 @@ namespace Sg\DatatablesBundle\Datatable\Editable;
 use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class SelectEditable
+ */
 class SelectEditable extends AbstractEditable
 {
     /**
@@ -67,9 +70,9 @@ class SelectEditable extends AbstractEditable
     }
 
     /**
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setSource(array $source)
     {

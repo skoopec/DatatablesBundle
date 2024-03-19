@@ -17,7 +17,14 @@ use Sg\DatatablesBundle\Datatable\Action\Action;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Sg\DatatablesBundle\Datatable\HtmlContainerTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function call_user_func;
+use function count;
+use function is_array;
+use function is_bool;
 
+/**
+ * Class ActionColumn
+ */
 class ActionColumn extends AbstractColumn
 {
     /*
@@ -76,20 +83,20 @@ class ActionColumn extends AbstractColumn
     {
         $parameters = [];
         $attributes = [];
-        $values = [];
+        $values     = [];
 
         /** @var Action $action */
         foreach ($this->actions as $actionKey => $action) {
             $routeParameters = $action->getRouteParameters();
-            if (\is_array($routeParameters)) {
+            if (is_array($routeParameters)) {
                 foreach ($routeParameters as $key => $value) {
                     if (isset($row[$value])) {
                         $parameters[$actionKey][$key] = $row[$value];
                     } else {
-                        $path = Helper::getDataPropertyPath($value);
+                        $path  = Helper::getDataPropertyPath($value);
                         $entry = $this->accessor->getValue($row, $path);
 
-                        if (! empty($entry)) {
+                        if (!empty($entry)) {
                             $parameters[$actionKey][$key] = $entry;
                         } else {
                             $parameters[$actionKey][$key] = $value;
@@ -97,16 +104,16 @@ class ActionColumn extends AbstractColumn
                     }
                 }
             } elseif ($routeParameters instanceof Closure) {
-                $parameters[$actionKey] = \call_user_func($routeParameters, $row);
+                $parameters[$actionKey] = call_user_func($routeParameters, $row);
             } else {
                 $parameters[$actionKey] = [];
             }
 
             $actionAttributes = $action->getAttributes();
-            if (\is_array($actionAttributes)) {
+            if (is_array($actionAttributes)) {
                 $attributes[$actionKey] = $actionAttributes;
             } elseif ($actionAttributes instanceof Closure) {
-                $attributes[$actionKey] = \call_user_func($actionAttributes, $row);
+                $attributes[$actionKey] = call_user_func($actionAttributes, $row);
             } else {
                 $attributes[$actionKey] = [];
             }
@@ -119,12 +126,12 @@ class ActionColumn extends AbstractColumn
                         $values[$actionKey] = $action->getButtonValue();
                     }
 
-                    if (\is_bool($values[$actionKey])) {
-                        $values[$actionKey] = (int) $values[$actionKey];
+                    if (is_bool($values[$actionKey])) {
+                        $values[$actionKey] = (int)$values[$actionKey];
                     }
 
                     if (true === $action->isButtonValuePrefix()) {
-                        $values[$actionKey] = 'sg-datatables-'.$this->getDatatableName().'-action-button-'.$actionKey.'-'.$values[$actionKey];
+                        $values[$actionKey] = 'sg-datatables-' . $this->getDatatableName() . '-action-button-' . $actionKey . '-' . $values[$actionKey];
                     }
                 } else {
                     $values[$actionKey] = null;
@@ -135,13 +142,13 @@ class ActionColumn extends AbstractColumn
         $row[$this->getIndex()] = $this->twig->render(
             $this->getCellContentTemplate(),
             [
-                'actions' => $this->actions,
-                'route_parameters' => $parameters,
-                'attributes' => $attributes,
-                'values' => $values,
-                'render_if_actions' => $row['sg_datatables_actions'][$this->index],
+                'actions'              => $this->actions,
+                'route_parameters'     => $parameters,
+                'attributes'           => $attributes,
+                'values'               => $values,
+                'render_if_actions'    => $row['sg_datatables_actions'][$this->index],
                 'start_html_container' => $this->startHtml,
-                'end_html_container' => $this->endHtml,
+                'end_html_container'   => $this->endHtml,
             ]
         );
     }
@@ -200,7 +207,7 @@ class ActionColumn extends AbstractColumn
 
         $resolver->setDefaults([
             'start_html' => null,
-            'end_html' => null,
+            'end_html'   => null,
         ]);
 
         $resolver->setAllowedTypes('actions', 'array');
@@ -223,13 +230,13 @@ class ActionColumn extends AbstractColumn
     }
 
     /**
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setActions(array $actions)
     {
-        if (\count($actions) > 0) {
+        if (count($actions) > 0) {
             foreach ($actions as $action) {
                 $this->addAction($action);
             }
@@ -243,11 +250,14 @@ class ActionColumn extends AbstractColumn
     /**
      * Add action.
      *
+     * @param array $action
+     *
      * @return $this
+     * @throws Exception
      */
     public function addAction(array $action)
     {
-        $newAction = new Action($this->datatableName);
+        $newAction       = new Action($this->datatableName);
         $this->actions[] = $newAction->set($action);
 
         return $this;

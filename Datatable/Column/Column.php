@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -15,7 +15,11 @@ use Sg\DatatablesBundle\Datatable\Editable\EditableInterface;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function count;
 
+/**
+ * Class Column
+ */
 class Column extends AbstractColumn
 {
     // The Column is editable.
@@ -50,7 +54,7 @@ class Column extends AbstractColumn
     public function renderToMany(array &$row)
     {
         $value = null;
-        $path = Helper::getDataPropertyPath($this->data, $value);
+        $path  = Helper::getDataPropertyPath($this->data, $value);
 
         if ($this->accessor->isReadable($row, $path)) {
             if ($this->isEditableContentRequired($row)) {
@@ -60,9 +64,9 @@ class Column extends AbstractColumn
 
                 $entries = $this->accessor->getValue($row, $path);
 
-                if (\count($entries) > 0) {
+                if (count($entries) > 0) {
                     foreach ($entries as $key => $entry) {
-                        $currentPath = $path.'['.$key.']'.$value;
+                        $currentPath       = $path . '[' . $key . ']' . $value;
                         $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
                         $content = $this->renderTemplate(
@@ -99,10 +103,10 @@ class Column extends AbstractColumn
                 '@SgDatatables/column/column_post_create_dt.js.twig',
                 [
                     'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
-                    'editable_options' => $this->editable,
-                    'entity_class_name' => $this->getEntityClassName(),
-                    'column_dql' => $this->dql,
-                    'original_type_of_field' => $this->getOriginalTypeOfField(),
+                    'editable_options'               => $this->editable,
+                    'entity_class_name'              => $this->getEntityClassName(),
+                    'column_dql'                     => $this->dql,
+                    'original_type_of_field'         => $this->getOriginalTypeOfField(),
                 ]
             );
         }
@@ -122,7 +126,7 @@ class Column extends AbstractColumn
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'filter' => [TextFilter::class, []],
+            'filter'   => [TextFilter::class, []],
             'editable' => null,
         ]);
 
@@ -140,7 +144,7 @@ class Column extends AbstractColumn
      * Render template.
      *
      * @param string|null $data
-     * @param string      $pk
+     * @param string $pk
      * @param string|null $path
      *
      * @return mixed|string
@@ -150,10 +154,10 @@ class Column extends AbstractColumn
         return $this->twig->render(
             $this->getCellContentTemplate(),
             [
-                'data' => $data,
+                'data'                           => $data,
                 'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
-                'pk' => $pk,
-                'path' => $path,
+                'pk'                             => $pk,
+                'path'                           => $path,
             ]
         );
     }

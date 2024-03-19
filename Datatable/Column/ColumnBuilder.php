@@ -15,10 +15,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Sg\DatatablesBundle\Datatable\Factory;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
+use function array_key_exists;
+use function count;
 
+/**
+ * Class ColumnBuilder
+ */
 class ColumnBuilder
 {
     /**
@@ -90,15 +96,15 @@ class ColumnBuilder
      */
     public function __construct(ClassMetadata $metadata, Environment $twig, RouterInterface $router, $datatableName, EntityManagerInterface $em)
     {
-        $this->metadata = $metadata;
-        $this->twig = $twig;
-        $this->router = $router;
+        $this->metadata      = $metadata;
+        $this->twig          = $twig;
+        $this->router        = $router;
         $this->datatableName = $datatableName;
-        $this->em = $em;
+        $this->em            = $em;
 
-        $this->columns = [];
-        $this->columnNames = [];
-        $this->uniqueColumns = [];
+        $this->columns         = [];
+        $this->columnNames     = [];
+        $this->uniqueColumns   = [];
         $this->entityClassName = $metadata->getName();
     }
 
@@ -109,12 +115,12 @@ class ColumnBuilder
     /**
      * Add Column.
      *
-     * @param string|null            $dql
+     * @param string|null $dql
      * @param ColumnInterface|string $class
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function add($dql, $class, array $options = [])
     {
@@ -182,7 +188,7 @@ class ColumnBuilder
      */
     public function getUniqueColumn($columnType)
     {
-        return \array_key_exists($columnType, $this->uniqueColumns) ? $this->uniqueColumns[$columnType] : null;
+        return array_key_exists($columnType, $this->uniqueColumns) ? $this->uniqueColumns[$columnType] : null;
     }
 
     //-------------------------------------------------
@@ -192,16 +198,17 @@ class ColumnBuilder
     /**
      * @param string $entityName
      *
-     * @throws Exception
-     *
      * @return ClassMetadata
+     * @throws \Doctrine\Persistence\Mapping\MappingException
+     * @throws InvalidArgumentException
+     * @throws \ReflectionException
      */
     private function getMetadata($entityName)
     {
         try {
             $metadata = $this->em->getMetadataFactory()->getMetadataFor($entityName);
-        } catch (MappingException $e) {
-            throw new Exception('DatatableQueryBuilder::getMetadata(): Given object '.$entityName.' is not a Doctrine Entity.');
+        } catch (MappingException) {
+            throw new Exception('DatatableQueryBuilder::getMetadata(): Given object ' . $entityName . ' is not a Doctrine Entity.');
         }
 
         return $metadata;
@@ -211,8 +218,10 @@ class ColumnBuilder
      * Get metadata from association.
      *
      * @param string $association
+     * @param ClassMetadata $metadata
      *
      * @return ClassMetadata
+     * @throws Exception
      */
     private function getMetadataFromAssociation($association, ClassMetadata $metadata)
     {
@@ -241,15 +250,18 @@ class ColumnBuilder
      * Handle dql properties.
      *
      * @param string $dql
+     * @param array $options
+     * @param AbstractColumn $column
      *
      * @return $this
+     * @throws Exception
      */
     private function handleDqlProperties($dql, array $options, AbstractColumn $column)
     {
         // the Column 'data' property has normally the same value as 'dql'
         $column->setData($dql);
 
-        if (! isset($options['dql'])) {
+        if (!isset($options['dql'])) {
             $column->setCustomDql(false);
             $column->setDql($dql);
         } else {
@@ -278,17 +290,19 @@ class ColumnBuilder
      * Sets some types.
      *
      * @param string $dql
+     * @param AbstractColumn $column
      *
      * @return $this
+     * @throws MappingException
      */
     private function setTypeProperties($dql, AbstractColumn $column)
     {
         if (true === $column->isSelectColumn() && false === $column->isCustomDql()) {
             $metadata = $this->metadata;
-            $parts = explode('.', $dql);
+            $parts    = explode('.', $dql);
             // add associations types
             if (true === $column->isAssociation()) {
-                while (\count($parts) > 1) {
+                while (count($parts) > 1) {
                     $currentPart = array_shift($parts);
 
                     // @noinspection PhpUndefinedMethodInspection
@@ -319,8 +333,8 @@ class ColumnBuilder
     private function addColumn($dql, AbstractColumn $column)
     {
         if (true === $column->callAddIfClosure()) {
-            $this->columns[] = $column;
-            $index = \count($this->columns) - 1;
+            $this->columns[]         = $column;
+            $index                   = count($this->columns) - 1;
             $this->columnNames[$dql] = $index;
             $column->setIndex($index);
 
@@ -357,7 +371,7 @@ class ColumnBuilder
         }
 
         // Remove column from columnNames
-        if (\array_key_exists($dql, $this->columnNames)) {
+        if (array_key_exists($dql, $this->columnNames)) {
             unset($this->columnNames[$dql]);
         }
 
@@ -382,15 +396,15 @@ class ColumnBuilder
     /**
      * Check unique.
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     private function checkUnique(): self
     {
         $unique = $this->uniqueColumns;
 
-        if (\count(array_unique($unique)) < \count($unique)) {
+        if (count(array_unique($unique)) < count($unique)) {
             throw new Exception('ColumnBuilder::checkUnique(): Unique columns are only allowed once.');
         }
 

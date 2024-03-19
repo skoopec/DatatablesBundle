@@ -13,6 +13,9 @@ namespace Sg\DatatablesBundle\Datatable\Filter;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class NumberFilter
+ */
 class NumberFilter extends TextFilter
 {
     /**
@@ -78,12 +81,12 @@ class NumberFilter extends TextFilter
         $resolver->remove('placeholder_text');
 
         $resolver->setDefaults([
-            'min' => '0',
-            'max' => '100',
-            'step' => '1',
+            'min'        => '0',
+            'max'        => '100',
+            'step'       => '1',
             'show_label' => false,
-            'datalist' => null,
-            'type' => 'number',
+            'datalist'   => null,
+            'type'       => 'number',
         ]);
 
         $resolver->setAllowedTypes('min', 'string');

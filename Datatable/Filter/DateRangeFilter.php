@@ -16,6 +16,9 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class DateRangeFilter
+ */
 class DateRangeFilter extends AbstractFilter
 {
     //-------------------------------------------------
@@ -40,10 +43,10 @@ class DateRangeFilter extends AbstractFilter
         }
         [$_dateStart, $_dateEnd] = explode(' - ', $searchValue);
         $dateStart = new DateTime($_dateStart);
-        $dateEnd = new DateTime($_dateEnd);
+        $dateEnd   = new DateTime($_dateEnd);
         $dateEnd->setTime(23, 59, 59);
 
-        $andExpr = $this->getBetweenAndExpression($andExpr, $qb, $searchField, $dateStart->format('Y-m-d H:i:s'), $dateEnd->format('Y-m-d H:i:s'), $parameterCounter);
+        $andExpr          = $this->getBetweenAndExpression($andExpr, $qb, $searchField, $dateStart->format('Y-m-d H:i:s'), $dateEnd->format('Y-m-d H:i:s'), $parameterCounter);
         $parameterCounter += 2;
 
         return $andExpr;

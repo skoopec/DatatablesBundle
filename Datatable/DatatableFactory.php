@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -13,13 +13,21 @@ namespace Sg\DatatablesBundle\Datatable;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use InvalidArgumentException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface as LegacyTranslatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_string;
 
+/**
+ * Class DatatableFactory
+ */
 class DatatableFactory
 {
     /**
@@ -64,6 +72,14 @@ class DatatableFactory
      */
     protected $twig;
 
+    /**
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TokenStorageInterface $securityToken
+     * @param $translator
+     * @param RouterInterface $router
+     * @param EntityManagerInterface $em
+     * @param Environment $twig
+     */
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
         TokenStorageInterface $securityToken,
@@ -73,15 +89,16 @@ class DatatableFactory
         Environment $twig
     ) {
         $this->authorizationChecker = $authorizationChecker;
-        $this->securityToken = $securityToken;
+        $this->securityToken        = $securityToken;
 
-        if (! ($translator instanceof LegacyTranslatorInterface) && ! ($translator instanceof TranslatorInterface)) {
-            throw new \InvalidArgumentException(sprintf('The $translator argument of %s must be an instance of %s or %s, a %s was given.', static::class, LegacyTranslatorInterface::class, TranslatorInterface::class, \get_class($translator)));
+        if (!($translator instanceof LegacyTranslatorInterface) && !($translator instanceof TranslatorInterface)) {
+            throw new InvalidArgumentException(sprintf('The $translator argument of %s must be an instance of %s or %s, a %s was given.', static::class, LegacyTranslatorInterface::class,
+                TranslatorInterface::class, get_class($translator)));
         }
         $this->translator = $translator;
-        $this->router = $router;
-        $this->em = $em;
-        $this->twig = $twig;
+        $this->router     = $router;
+        $this->em         = $em;
+        $this->twig       = $twig;
     }
 
     //-------------------------------------------------
@@ -91,14 +108,14 @@ class DatatableFactory
     /**
      * @param string $class
      *
+     * @return DatatableInterface
      * @throws Exception
      *
-     * @return DatatableInterface
      */
     public function create($class)
     {
-        if (! \is_string($class)) {
-            $type = \gettype($class);
+        if (!is_string($class)) {
+            $type = gettype($class);
 
             throw new Exception("DatatableFactory::create(): String expected, {$type} given");
         }
@@ -107,7 +124,7 @@ class DatatableFactory
             throw new Exception("DatatableFactory::create(): {$class} does not exist");
         }
 
-        if (\in_array(DatatableInterface::class, class_implements($class), true)) {
+        if (in_array(DatatableInterface::class, class_implements($class), true)) {
             return new $class(
                 $this->authorizationChecker,
                 $this->securityToken,

@@ -20,7 +20,12 @@ use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
+use function in_array;
+use function is_array;
 
+/**
+ * Class AbstractColumn
+ */
 abstract class AbstractColumn implements ColumnInterface
 {
     // Use an 'add_if' option to check in ColumnBuilder if the Column can be added.
@@ -309,23 +314,23 @@ abstract class AbstractColumn implements ColumnInterface
         $resolver->setDefined(['dql', 'data']);
 
         $resolver->setDefaults([
-            'cell_type' => null,
-            'class_name' => null,
-            'content_padding' => null,
-            'default_content' => null,
-            'name' => null,
-            'orderable' => true,
-            'order_data' => null,
-            'order_sequence' => null,
-            'searchable' => true,
-            'title' => null,
-            'visible' => true,
-            'width' => null,
-            'add_if' => null,
-            'join_type' => 'leftJoin',
-            'type_of_field' => null,
+            'cell_type'           => null,
+            'class_name'          => null,
+            'content_padding'     => null,
+            'default_content'     => null,
+            'name'                => null,
+            'orderable'           => true,
+            'order_data'          => null,
+            'order_sequence'      => null,
+            'searchable'          => true,
+            'title'               => null,
+            'visible'             => true,
+            'width'               => null,
+            'add_if'              => null,
+            'join_type'           => 'leftJoin',
+            'type_of_field'       => null,
             'responsive_priority' => null,
-            'sent_in_response' => true,
+            'sent_in_response'    => true,
         ]);
 
         $resolver->setAllowedTypes('cell_type', ['null', 'string']);
@@ -393,7 +398,7 @@ abstract class AbstractColumn implements ColumnInterface
     public function isToManyAssociation()
     {
         if (true === $this->isAssociation() && null !== $this->typeOfAssociation) {
-            if (\in_array(ClassMetadataInfo::ONE_TO_MANY, $this->typeOfAssociation, true) || \in_array(ClassMetadataInfo::MANY_TO_MANY, $this->typeOfAssociation, true)) {
+            if (in_array(ClassMetadataInfo::ONE_TO_MANY, $this->typeOfAssociation, true) || in_array(ClassMetadataInfo::MANY_TO_MANY, $this->typeOfAssociation, true)) {
                 return true;
             }
 
@@ -622,7 +627,7 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function getOrderData()
     {
-        if (\is_array($this->orderData)) {
+        if (is_array($this->orderData)) {
             return $this->optionToJson($this->orderData);
         }
 
@@ -646,7 +651,7 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function getOrderSequence()
     {
-        if (\is_array($this->orderSequence)) {
+        if (is_array($this->orderSequence)) {
             return $this->optionToJson($this->orderSequence);
         }
 
@@ -824,9 +829,9 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * @param string|null $dql
      *
+     * @return $this
      * @throws Exception
      *
-     * @return $this
      */
     public function setDql($dql)
     {

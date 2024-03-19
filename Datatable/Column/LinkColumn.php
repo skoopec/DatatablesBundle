@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -14,7 +14,14 @@ namespace Sg\DatatablesBundle\Datatable\Column;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_callable;
 
+/**
+ * Class LinkColumn
+ */
 class LinkColumn extends AbstractColumn
 {
     // The LinkColumn is filterable.
@@ -83,7 +90,6 @@ class LinkColumn extends AbstractColumn
     public function renderSingleField(array &$row)
     {
         $path = Helper::getDataPropertyPath($this->data);
-        $content = '';
 
         if ($this->accessor->isReadable($row, $path)) {
             if ($this->getEmail()) {
@@ -91,31 +97,29 @@ class LinkColumn extends AbstractColumn
                 $content .= $this->accessor->getValue($row, $path);
                 $content .= '">';
 
-                if (\is_callable($this->text)) {
-                    $content .= \call_user_func($this->text, $row);
+                if (is_callable($this->text)) {
+                    $content .= call_user_func($this->text, $row);
                 } else {
                     $content .= $this->accessor->getValue($row, $path);
                 }
 
                 $content .= '</a>';
             } else {
-                $renderRouteParams = [];
-
-                if (\is_callable($this->routeParams)) {
-                    $renderRouteParams = \call_user_func($this->routeParams, $row);
+                if (is_callable($this->routeParams)) {
+                    $renderRouteParams = call_user_func($this->routeParams, $row);
                 } else {
                     $renderRouteParams = $this->routeParams;
                 }
 
-                if (\in_array(null, $renderRouteParams, true)) {
+                if (in_array(null, $renderRouteParams, true)) {
                     $content = $this->getEmptyValue();
                 } else {
                     $content = '<a href="';
                     $content .= $this->router->generate($this->getRoute(), $renderRouteParams);
                     $content .= '">';
 
-                    if (\is_callable($this->text)) {
-                        $content .= \call_user_func($this->text, $row);
+                    if (is_callable($this->text)) {
+                        $content .= call_user_func($this->text, $row);
                     } else {
                         $content .= $this->accessor->getValue($row, $path);
                     }
@@ -134,8 +138,8 @@ class LinkColumn extends AbstractColumn
      */
     public function renderToMany(array &$row)
     {
-        $value = null;
-        $path = Helper::getDataPropertyPath($this->data, $value);
+        $value   = null;
+        $path    = Helper::getDataPropertyPath($this->data, $value);
         $content = '';
 
         if ($this->accessor->isReadable($row, $path)) {
@@ -146,9 +150,9 @@ class LinkColumn extends AbstractColumn
                 //     => $path = [comments]
                 //     => $value = [createdBy][username]
 
-                if (\count($entries) > 0) {
+                if (count($entries) > 0) {
                     foreach ($entries as $key => $entry) {
-                        $currentPath = $path.'['.$key.']'.$value;
+                        $currentPath       = $path . '[' . $key . ']' . $value;
                         $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
                         $content = $this->renderTemplate(
@@ -166,12 +170,10 @@ class LinkColumn extends AbstractColumn
                     $entries = array_values(array_filter($entries, $this->getFilterFunction()));
                 }
 
-                if (\count($entries) > 0) {
-                    for ($i = 0; $i < \count($entries); ++$i) {
-                        $renderRouteParams = [];
-
-                        if (\is_callable($this->routeParams)) {
-                            $renderRouteParams = \call_user_func($this->routeParams, $entries[$i]);
+                if (count($entries) > 0) {
+                    for ($i = 0; $i < count($entries); ++$i) {
+                        if (is_callable($this->routeParams)) {
+                            $renderRouteParams = call_user_func($this->routeParams, $entries[$i]);
                         } else {
                             $renderRouteParams = $this->routeParams;
                         }
@@ -180,15 +182,15 @@ class LinkColumn extends AbstractColumn
                         $content .= $this->router->generate($this->getRoute(), $renderRouteParams);
                         $content .= '">';
 
-                        if (\is_callable($this->text)) {
-                            $content .= \call_user_func($this->text, $entries[$i]);
+                        if (is_callable($this->text)) {
+                            $content .= call_user_func($this->text, $entries[$i]);
                         } else {
                             $content .= $this->text;
                         }
 
                         $content .= '</a>';
 
-                        if ($i < \count($entries) - 1) {
+                        if ($i < count($entries) - 1) {
                             $content .= $this->separator;
                         }
                     }
@@ -239,14 +241,14 @@ class LinkColumn extends AbstractColumn
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'filter' => [TextFilter::class, []],
-            'route' => '',
-            'route_params' => [],
-            'empty_value' => '',
-            'text' => null,
-            'separator' => '',
+            'filter'         => [TextFilter::class, []],
+            'route'          => '',
+            'route_params'   => [],
+            'empty_value'    => '',
+            'text'           => null,
+            'separator'      => '',
             'filterFunction' => null,
-            'email' => false,
+            'email'          => false,
         ]);
 
         $resolver->setAllowedTypes('filter', 'array');
@@ -372,7 +374,7 @@ class LinkColumn extends AbstractColumn
     /**
      * Get filter function.
      *
-     * @return string
+     * @return Closure|null
      */
     public function getFilterFunction()
     {

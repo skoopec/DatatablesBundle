@@ -12,7 +12,11 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function is_array;
 
+/**
+ * Class Events
+ */
 class Events
 {
     use OptionsTrait;
@@ -146,21 +150,21 @@ class Events
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'column_sizing' => null,
+            'column_sizing'     => null,
             'column_visibility' => null,
-            'destroy' => null,
-            'error' => null,
-            'length' => null,
-            'order' => null,
-            'page' => null,
-            'pre_init' => null,
-            'pre_xhr' => null,
-            'processing' => null,
-            'search' => null,
-            'state_loaded' => null,
+            'destroy'           => null,
+            'error'             => null,
+            'length'            => null,
+            'order'             => null,
+            'page'              => null,
+            'pre_init'          => null,
+            'pre_xhr'           => null,
+            'processing'        => null,
+            'search'            => null,
+            'state_loaded'      => null,
             'state_load_params' => null,
             'state_save_params' => null,
-            'xhr' => null,
+            'xhr'               => null,
         ]);
 
         $resolver->setAllowedTypes('column_sizing', ['null', 'array']);
@@ -198,10 +202,11 @@ class Events
      * @param array|null $columnSizing
      *
      * @return $this
+     * @throws \Exception
      */
     public function setColumnSizing($columnSizing)
     {
-        if (\is_array($columnSizing)) {
+        if (is_array($columnSizing)) {
             $this->validateArrayForTemplateAndOther($columnSizing);
         }
 
@@ -222,10 +227,11 @@ class Events
      * @param array|null $columnVisibility
      *
      * @return $this
+     * @throws \Exception
      */
     public function setColumnVisibility($columnVisibility)
     {
-        if (\is_array($columnVisibility)) {
+        if (is_array($columnVisibility)) {
             $this->validateArrayForTemplateAndOther($columnVisibility);
         }
 
@@ -246,10 +252,11 @@ class Events
      * @param array|null $destroy
      *
      * @return $this
+     * @throws \Exception
      */
     public function setDestroy($destroy)
     {
-        if (\is_array($destroy)) {
+        if (is_array($destroy)) {
             $this->validateArrayForTemplateAndOther($destroy);
         }
 
@@ -270,10 +277,11 @@ class Events
      * @param array|null $error
      *
      * @return $this
+     * @throws \Exception
      */
     public function setError($error)
     {
-        if (\is_array($error)) {
+        if (is_array($error)) {
             $this->validateArrayForTemplateAndOther($error);
         }
 
@@ -294,10 +302,11 @@ class Events
      * @param array|null $length
      *
      * @return $this
+     * @throws \Exception
      */
     public function setLength($length)
     {
-        if (\is_array($length)) {
+        if (is_array($length)) {
             $this->validateArrayForTemplateAndOther($length);
         }
 
@@ -318,10 +327,11 @@ class Events
      * @param array|null $order
      *
      * @return $this
+     * @throws \Exception
      */
     public function setOrder($order)
     {
-        if (\is_array($order)) {
+        if (is_array($order)) {
             $this->validateArrayForTemplateAndOther($order);
         }
 
@@ -342,10 +352,11 @@ class Events
      * @param array|null $page
      *
      * @return $this
+     * @throws \Exception
      */
     public function setPage($page)
     {
-        if (\is_array($page)) {
+        if (is_array($page)) {
             $this->validateArrayForTemplateAndOther($page);
         }
 
@@ -366,10 +377,11 @@ class Events
      * @param array|null $preInit
      *
      * @return $this
+     * @throws \Exception
      */
     public function setPreInit($preInit)
     {
-        if (\is_array($preInit)) {
+        if (is_array($preInit)) {
             $this->validateArrayForTemplateAndOther($preInit);
         }
 
@@ -390,10 +402,11 @@ class Events
      * @param array|null $preXhr
      *
      * @return $this
+     * @throws \Exception
      */
     public function setPreXhr($preXhr)
     {
-        if (\is_array($preXhr)) {
+        if (is_array($preXhr)) {
             $this->validateArrayForTemplateAndOther($preXhr);
         }
 
@@ -414,10 +427,11 @@ class Events
      * @param array|null $processing
      *
      * @return $this
+     * @throws \Exception
      */
     public function setProcessing($processing)
     {
-        if (\is_array($processing)) {
+        if (is_array($processing)) {
             $this->validateArrayForTemplateAndOther($processing);
         }
 
@@ -438,10 +452,11 @@ class Events
      * @param array|null $search
      *
      * @return $this
+     * @throws \Exception
      */
     public function setSearch($search)
     {
-        if (\is_array($search)) {
+        if (is_array($search)) {
             $this->validateArrayForTemplateAndOther($search);
         }
 
@@ -462,10 +477,11 @@ class Events
      * @param array|null $stateLoaded
      *
      * @return $this
+     * @throws \Exception
      */
     public function setStateLoaded($stateLoaded)
     {
-        if (\is_array($stateLoaded)) {
+        if (is_array($stateLoaded)) {
             $this->validateArrayForTemplateAndOther($stateLoaded);
         }
 
@@ -486,10 +502,11 @@ class Events
      * @param array|null $stateLoadParams
      *
      * @return $this
+     * @throws \Exception
      */
     public function setStateLoadParams($stateLoadParams)
     {
-        if (\is_array($stateLoadParams)) {
+        if (is_array($stateLoadParams)) {
             $this->validateArrayForTemplateAndOther($stateLoadParams);
         }
 
@@ -510,10 +527,11 @@ class Events
      * @param array|null $stateSaveParams
      *
      * @return $this
+     * @throws \Exception
      */
     public function setStateSaveParams($stateSaveParams)
     {
-        if (\is_array($stateSaveParams)) {
+        if (is_array($stateSaveParams)) {
             $this->validateArrayForTemplateAndOther($stateSaveParams);
         }
 
@@ -534,10 +552,11 @@ class Events
      * @param array|null $xhr
      *
      * @return $this
+     * @throws \Exception
      */
     public function setXhr($xhr)
     {
-        if (\is_array($xhr)) {
+        if (is_array($xhr)) {
             $this->validateArrayForTemplateAndOther($xhr);
         }
 

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
+/** @noinspection DuplicatedCode */
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -16,7 +17,12 @@ use Sg\DatatablesBundle\Datatable\Filter\SelectFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function count;
+use function in_array;
 
+/**
+ * Class BooleanColumn
+ */
 class BooleanColumn extends AbstractColumn
 {
     use EditableTrait;
@@ -95,14 +101,14 @@ class BooleanColumn extends AbstractColumn
     public function renderToMany(array &$row)
     {
         $value = null;
-        $path = Helper::getDataPropertyPath($this->data, $value);
+        $path  = Helper::getDataPropertyPath($this->data, $value);
 
         if ($this->accessor->isReadable($row, $path)) {
             $entries = $this->accessor->getValue($row, $path);
 
-            if (\count($entries) > 0) {
+            if (count($entries) > 0) {
                 foreach ($entries as $key => $entry) {
-                    $currentPath = $path.'['.$key.']'.$value;
+                    $currentPath       = $path . '[' . $key . ']' . $value;
                     $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
                     if (true === $this->isEditableContentRequired($row)) {
@@ -142,10 +148,10 @@ class BooleanColumn extends AbstractColumn
                 '@SgDatatables/column/column_post_create_dt.js.twig',
                 [
                     'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
-                    'editable_options' => $this->editable,
-                    'entity_class_name' => $this->getEntityClassName(),
-                    'column_dql' => $this->dql,
-                    'original_type_of_field' => $this->getOriginalTypeOfField(),
+                    'editable_options'               => $this->editable,
+                    'entity_class_name'              => $this->getEntityClassName(),
+                    'column_dql'                     => $this->dql,
+                    'original_type_of_field'         => $this->getOriginalTypeOfField(),
                 ]
             );
         }
@@ -166,18 +172,18 @@ class BooleanColumn extends AbstractColumn
 
         $resolver->setDefaults(
             [
-                'filter' => [
+                'filter'      => [
                     SelectFilter::class,
                     [
-                        'search_type' => 'eq',
+                        'search_type'    => 'eq',
                         'select_options' => ['' => 'Any', '1' => 'Yes', '0' => 'No'],
                     ],
                 ],
-                'true_icon' => null,
-                'false_icon' => null,
-                'true_label' => null,
+                'true_icon'   => null,
+                'false_icon'  => null,
+                'true_label'  => null,
                 'false_label' => null,
-                'editable' => null,
+                'editable'    => null,
             ]
         );
 
@@ -307,21 +313,21 @@ class BooleanColumn extends AbstractColumn
     private function renderTemplate($data, $pk = null, $path = null)
     {
         $renderVars = [
-            'data' => $this->isCustomDql() && \in_array($data, [0, 1, '0', '1'], true) ? (bool) $data : $data,
+            'data'            => $this->isCustomDql() && in_array($data, [0, 1, '0', '1'], true) ? (bool)$data : $data,
             'default_content' => $this->getDefaultContent(),
-            'true_label' => $this->trueLabel,
-            'true_icon' => $this->trueIcon,
-            'false_label' => $this->falseLabel,
-            'false_icon' => $this->falseIcon,
+            'true_label'      => $this->trueLabel,
+            'true_icon'       => $this->trueIcon,
+            'false_label'     => $this->falseLabel,
+            'false_icon'      => $this->falseIcon,
         ];
 
         // editable vars
         if (null !== $pk) {
             $renderVars = array_merge($renderVars, [
                 'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
-                'pk' => $pk,
-                'path' => $path,
-                'empty_text' => $this->editable->getEmptyText(),
+                'pk'                             => $pk,
+                'path'                           => $path,
+                'empty_text'                     => $this->editable->getEmptyText(),
             ]);
         }
 

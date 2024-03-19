@@ -12,7 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable\Column;
 
 /**
- * Interface ColumnInterface.
+ * Interface ColumnInterface
  */
 interface ColumnInterface
 {
