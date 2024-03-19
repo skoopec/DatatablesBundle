@@ -488,11 +488,11 @@ class DatatableQueryBuilder
      */
     private function setSelectFrom(QueryBuilder $qb): void
     {
-        foreach ($this->selectColumns as $key => $value) {
-            if (empty($key) === false) {
-                $qb->addSelect('partial ' . $key . '.{' . implode(',', $value) . '}');
+        foreach ($this->selectColumns as $tableName => $tableFields) {
+            if (empty($tableName) === false) {
+                $qb->addSelect($tableName);
             } else {
-                $qb->addSelect($value);
+                $qb->addSelect($tableFields);
             }
         }
     }
