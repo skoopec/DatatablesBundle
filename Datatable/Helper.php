@@ -70,7 +70,7 @@ class Helper
      *
      * @return string
      */
-    public static function getPropertyPathObjectNotation($path, $key, $value)
+    public static function getPropertyPathObjectNotation($path, $key, $value): string
     {
         $objectValue = str_replace(['][', '[', ']'], ['.', '', ''], $value);
 

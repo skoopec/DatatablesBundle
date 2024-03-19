@@ -12,7 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable\Column;
 
 use Doctrine\DBAL\Types\Type as DoctrineType;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
 use JsonException;
 use Sg\DatatablesBundle\Datatable\AddIfTrait;
@@ -396,10 +396,10 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * {@inheritdoc}
      */
-    public function isToManyAssociation()
+    public function isToManyAssociation(): bool
     {
         if ($this->isAssociation() === true && $this->typeOfAssociation !== null) {
-            return in_array(ClassMetadataInfo::ONE_TO_MANY, $this->typeOfAssociation, true) || in_array(ClassMetadataInfo::MANY_TO_MANY, $this->typeOfAssociation, true);
+            return in_array(ClassMetadata::ONE_TO_MANY, $this->typeOfAssociation, true) || in_array(ClassMetadata::MANY_TO_MANY, $this->typeOfAssociation, true);
         }
 
         return false;

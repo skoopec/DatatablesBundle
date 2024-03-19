@@ -33,7 +33,6 @@ use Sg\DatatablesBundle\Datatable\Options;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use function array_key_exists;
-use function call_user_func_array;
 use function count;
 use function func_get_args;
 use function in_array;
@@ -66,13 +65,6 @@ class DatatableQueryBuilder
      * @var EntityManagerInterface
      */
     private $em;
-
-    /**
-     * The name of the entity.
-     *
-     * @var string
-     */
-    private $entityName;
 
     /**
      * The short name of the entity.
@@ -171,6 +163,7 @@ class DatatableQueryBuilder
      * @var bool
      */
     private $useQueryCache = false;
+
     /**
      * Flag indicating state of query cache for records counting. This value is passed to Query object when it is
      * created. Default value is false.
@@ -178,6 +171,7 @@ class DatatableQueryBuilder
      * @var bool
      */
     private $useCountQueryCache = false;
+
     /**
      * Arguments to pass when configuring result cache on query for records retrieval. Those arguments are used when
      * calling useResultCache method on Query object when one is created.
@@ -185,6 +179,7 @@ class DatatableQueryBuilder
      * @var array
      */
     private $useResultCacheArgs = [false];
+
     /**
      * Arguments to pass when configuring result cache on query for counting records. Those arguments are used when
      * calling useResultCache method on Query object when one is created.
@@ -209,15 +204,14 @@ class DatatableQueryBuilder
     {
         $this->requestParams = $requestParams;
 
-        $this->em         = $datatable->getEntityManager();
-        $this->entityName = $datatable->getEntity();
+        $this->em = $datatable->getEntityManager();
 
-        $this->metadata        = $this->getMetadata($this->entityName);
+        $this->metadata        = $this->getMetadata($datatable->getEntity());
         $this->entityShortName = $this->getSafeName(strtolower($this->metadata->getReflectionClass()->getShortName()));
 
         $this->rootEntityIdentifier = $this->getIdentifier($this->metadata);
 
-        $this->qb       = $this->em->createQueryBuilder()->from($this->entityName, $this->entityShortName);
+        $this->qb       = $this->em->createQueryBuilder()->from($datatable->getEntity(), $this->entityShortName);
         $this->accessor = PropertyAccess::createPropertyAccessor();
 
         $this->columns     = $datatable->getColumnBuilder()->getColumns();
@@ -302,7 +296,9 @@ class DatatableQueryBuilder
 
         $query = $qb->getQuery();
         $query->setHydrationMode(AbstractQuery::HYDRATE_ARRAY)->useQueryCache($this->useQueryCache);
-        call_user_func_array([$query, 'useResultCache'], $this->useResultCacheArgs);
+        if (array_key_exists(0, $this->useResultCacheArgs) && $this->useResultCacheArgs[0] === true) {
+            $query->enableResultCache($this->useResultCacheArgs[1] ?? null);
+        }
 
         return $query;
     }
@@ -323,7 +319,9 @@ class DatatableQueryBuilder
 
         $query = $qb->getQuery();
         $query->useQueryCache($this->useCountQueryCache);
-        call_user_func_array([$query, 'useResultCache'], $this->useCountResultCacheArgs);
+        if (array_key_exists(0, $this->useCountResultCacheArgs) && $this->useCountResultCacheArgs[0] === true) {
+            $query->enableResultCache($this->useCountResultCacheArgs[1] ?? null);
+        }
 
         return !$qb->getDQLPart('groupBy')
             ? (int)$query->getSingleScalarResult()
@@ -499,6 +497,7 @@ class DatatableQueryBuilder
 
     /**
      * @param QueryBuilder $qb
+     *
      * @return void
      */
     private function setJoins(QueryBuilder $qb): void
@@ -513,6 +512,7 @@ class DatatableQueryBuilder
      * Construct the WHERE clause for server-side processing SQL query.
      *
      * @param QueryBuilder $qb
+     *
      * @return void
      */
     private function setWhere(QueryBuilder $qb): void
@@ -580,6 +580,7 @@ class DatatableQueryBuilder
      * Construct the ORDER BY clause for server-side processing SQL query.
      *
      * @param QueryBuilder $qb
+     *
      * @return void
      */
     private function setOrderBy(QueryBuilder $qb): void
@@ -608,6 +609,7 @@ class DatatableQueryBuilder
      * Construct the LIMIT clause for server-side processing SQL query.
      *
      * @param QueryBuilder $qb
+     *
      * @return void
      * @throws Exception
      */
@@ -758,7 +760,7 @@ class DatatableQueryBuilder
      *
      * @return string
      */
-    private function getSafeName($name)
+    private function getSafeName($name): string
     {
         try {
             $reservedKeywordsList = $this->em->getConnection()->getDatabasePlatform()?->getReservedKeywordsList();
