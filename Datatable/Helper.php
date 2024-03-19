@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Random\RandomException;
 use function is_int;
 
 /**
@@ -24,10 +25,11 @@ class Helper
      * @param string $prefix
      *
      * @return string
+     * @throws RandomException
      */
     public static function generateUniqueID($prefix = '')
     {
-        $id = sha1(microtime(true) . mt_rand(10000, 90000));
+        $id = sha1(microtime(true) . random_int(10000, 90000));
 
         return $prefix ? $prefix . '-' . $id : $id;
     }
@@ -43,9 +45,9 @@ class Helper
     public static function getDataPropertyPath($data, &$value = null)
     {
         // handle nested array case
-        if (true === is_int(strpos($data, '['))) {
+        if (is_int(strpos($data, '[')) === true) {
             $before = strstr($data, '[', true);
-            $value  = strstr($data, ']', false);
+            $value  = strstr($data, ']');
 
             // remove needle
             $value = str_replace('].', '', $value);
@@ -70,8 +72,7 @@ class Helper
      */
     public static function getPropertyPathObjectNotation($path, $key, $value)
     {
-        $objectValue = str_replace('][', '.', $value);
-        $objectValue = str_replace(['[', ']'], '', $objectValue);
+        $objectValue = str_replace(['][', '[', ']'], ['.', '', ''], $value);
 
         return str_replace(['[', ']'], '', $path) . '[' . $key . '].' . $objectValue;
     }

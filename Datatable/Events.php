@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function is_array;
 
@@ -133,6 +134,9 @@ class Events
      */
     protected $xhr;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -202,7 +206,7 @@ class Events
      * @param array|null $columnSizing
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setColumnSizing($columnSizing)
     {
@@ -227,7 +231,7 @@ class Events
      * @param array|null $columnVisibility
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setColumnVisibility($columnVisibility)
     {
@@ -252,7 +256,7 @@ class Events
      * @param array|null $destroy
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDestroy($destroy)
     {
@@ -277,7 +281,7 @@ class Events
      * @param array|null $error
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setError($error)
     {
@@ -302,7 +306,7 @@ class Events
      * @param array|null $length
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setLength($length)
     {
@@ -327,7 +331,7 @@ class Events
      * @param array|null $order
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setOrder($order)
     {
@@ -352,7 +356,7 @@ class Events
      * @param array|null $page
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setPage($page)
     {
@@ -377,7 +381,7 @@ class Events
      * @param array|null $preInit
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setPreInit($preInit)
     {
@@ -402,7 +406,7 @@ class Events
      * @param array|null $preXhr
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setPreXhr($preXhr)
     {
@@ -427,7 +431,7 @@ class Events
      * @param array|null $processing
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setProcessing($processing)
     {
@@ -452,7 +456,7 @@ class Events
      * @param array|null $search
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setSearch($search)
     {
@@ -477,7 +481,7 @@ class Events
      * @param array|null $stateLoaded
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateLoaded($stateLoaded)
     {
@@ -502,7 +506,7 @@ class Events
      * @param array|null $stateLoadParams
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateLoadParams($stateLoadParams)
     {
@@ -527,7 +531,7 @@ class Events
      * @param array|null $stateSaveParams
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateSaveParams($stateSaveParams)
     {
@@ -552,7 +556,7 @@ class Events
      * @param array|null $xhr
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setXhr($xhr)
     {

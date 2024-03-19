@@ -16,6 +16,9 @@ use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function count;
 
 /**
@@ -94,6 +97,8 @@ class ImageColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
@@ -110,6 +115,8 @@ class ImageColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderToMany(array &$row)
     {
@@ -180,7 +187,7 @@ class ImageColumn extends AbstractColumn
         $resolver->setAllowedTypes('enlarge', 'bool');
 
         $resolver->setNormalizer('enlarge', function (Options $options, $value) {
-            if (null === $options['imagine_filter_enlarged'] && true === $value) {
+            if ($options['imagine_filter_enlarged'] === null && $value === true) {
                 throw new Exception('ImageColumn::configureOptions(): For the enlarge option, imagine_filter_enlarged should not be null.');
             }
 
@@ -344,7 +351,10 @@ class ImageColumn extends AbstractColumn
      * @param string $data
      * @param string $classSuffix
      *
-     * @return mixed|string
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     private function renderImageTemplate($data, $classSuffix)
     {

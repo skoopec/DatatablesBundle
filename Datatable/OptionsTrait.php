@@ -12,6 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable;
 
 use Exception;
+use JsonException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -59,7 +60,7 @@ trait OptionsTrait
                                         ->enableMagicCall()
                                         ->getPropertyAccessor();
 
-        if (true === $resolve) {
+        if ($resolve === true) {
             $this->set($this->options);
         }
 
@@ -84,11 +85,13 @@ trait OptionsTrait
 
     /**
      * Option to JSON.
+     *
+     * @throws JsonException
      */
     protected function optionToJson($value)
     {
         if (is_array($value)) {
-            return json_encode($value);
+            return json_encode($value, JSON_THROW_ON_ERROR);
         }
 
         return $value;
@@ -103,13 +106,13 @@ trait OptionsTrait
      */
     protected function validateArrayForTemplateAndOther(array $array, array $other = ['template', 'vars'])
     {
-        if (false === array_key_exists('template', $array)) {
+        if (array_key_exists('template', $array) === false) {
             throw new Exception('OptionsTrait::validateArrayForTemplateAndOther(): The "template" option is required.');
         }
 
         foreach ($array as $key => $value) {
-            if (false === in_array($key, $other, true)) {
-                throw new Exception("OptionsTrait::validateArrayForTemplateAndOther(): {$key} is not an valid option.");
+            if (in_array($key, $other, true) === false) {
+                throw new Exception("OptionsTrait::validateArrayForTemplateAndOther(): $key is not an valid option.");
             }
         }
 

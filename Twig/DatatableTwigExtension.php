@@ -25,7 +25,6 @@ use Twig\Error\SyntaxError;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-use function call_user_func;
 use function is_array;
 use function is_bool;
 
@@ -189,7 +188,7 @@ class DatatableTwigExtension extends AbstractExtension
         $index        = $this->accessor->getValue($column, 'index');
         $searchColumn = $this->accessor->getValue($filter, 'searchColumn');
 
-        if (null !== $searchColumn) {
+        if ($searchColumn !== null) {
             $columns           = $datatable->getColumnBuilder()->getColumnNames();
             $searchColumnIndex = $columns[$searchColumn];
         } else {
@@ -235,20 +234,20 @@ class DatatableTwigExtension extends AbstractExtension
                     $parameters[$actionKey][$key] = $value;
                 }
             } elseif ($routeParameters instanceof Closure) {
-                $parameters[$actionKey] = call_user_func($routeParameters);
+                $parameters[$actionKey] = $routeParameters();
             } else {
                 $parameters[$actionKey] = [];
             }
 
             if ($action->isButton()) {
-                if (null !== $action->getButtonValue()) {
+                if ($action->getButtonValue() !== null) {
                     $values[$actionKey] = $action->getButtonValue();
 
                     if (is_bool($values[$actionKey])) {
                         $values[$actionKey] = (int)$values[$actionKey];
                     }
 
-                    if (true === $action->isButtonValuePrefix()) {
+                    if ($action->isButtonValuePrefix() === true) {
                         $values[$actionKey] = 'sg-datatables-' . $datatableName . '-multiselect-button-' . $actionKey . '-' . $values[$actionKey];
                     }
                 } else {

@@ -25,19 +25,25 @@ use Sg\DatatablesBundle\Datatable\Column\ArrayColumn;
  */
 final class ArrayColumnTest extends TestCase
 {
-    public function testIsAssociative()
+    /**
+     * @throws ReflectionException
+     */
+    public function testIsAssociative(): void
     {
         $arrayColumn = new ArrayColumn();
-        static::assertFalse($this->callMethod($arrayColumn, 'isAssociative', [['a', 'b']]));
-        static::assertTrue($this->callMethod($arrayColumn, 'isAssociative', [['a' => 1, 'b' => 1]]));
+        self::assertFalse(static::callMethod($arrayColumn, 'isAssociative', [['a', 'b']]));
+        self::assertTrue(static::callMethod($arrayColumn, 'isAssociative', [['a' => 1, 'b' => 1]]));
     }
 
-    public function testArrayToString()
+    /**
+     * @throws ReflectionException
+     */
+    public function testArrayToString(): void
     {
         $arrayColumn = new ArrayColumn();
-        $result      = $this->callMethod($arrayColumn, 'arrayToString', [['a', 'b' => ['d' => new DateTime()]]]);
-        static::assertNotEmpty($result);
-        static::assertIsString($result);
+        $result      = static::callMethod($arrayColumn, 'arrayToString', [['a', 'b' => ['d' => new DateTime()]]]);
+        self::assertNotEmpty($result);
+        self::assertIsString($result);
     }
 
     /**

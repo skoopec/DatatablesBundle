@@ -65,6 +65,9 @@ class Extensions
      */
     protected $rowGroup;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();

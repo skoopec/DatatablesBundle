@@ -12,6 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable\Editable;
 
 use Closure;
+use Exception;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function call_user_func;
@@ -110,6 +111,9 @@ abstract class AbstractEditable implements EditableInterface
      */
     protected $editableIf;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();

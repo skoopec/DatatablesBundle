@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Tests\Datatables;
 
+use Exception;
 use NumberFormatter;
 use Sg\DatatablesBundle\Datatable\AbstractDatatable;
 use Sg\DatatablesBundle\Datatable\Column\ActionColumn;
@@ -29,6 +30,7 @@ class PostDatatable extends AbstractDatatable
 {
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function buildDatatable(array $options = [])
     {

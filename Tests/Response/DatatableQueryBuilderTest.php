@@ -12,6 +12,7 @@
 namespace Sg\DatatablesBundle\Tests\Response;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -19,6 +20,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
+use Psr\Cache\InvalidArgumentException;
 use ReflectionClass;
 use Sg\DatatablesBundle\Datatable\Ajax;
 use Sg\DatatablesBundle\Datatable\Column\ColumnBuilder;
@@ -86,6 +88,10 @@ final class DatatableQueryBuilderTest extends TestCase
         $this->dataTable            = $this->prophesize(DatatableInterface::class);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
     public function testUsingAPrefixedAliasWhenShortNameIsAReservedWord()
     {
         $entityName = '\App\Entity\Order';
@@ -104,7 +110,11 @@ final class DatatableQueryBuilderTest extends TestCase
         $this->getDataTableQueryBuilder($entityName, $shortName);
     }
 
-    private function getDataTableQueryBuilder(string $entityName, string $shortName): DatatableQueryBuilder
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    private function getDataTableQueryBuilder(string $entityName, string $shortName): void
     {
         $this->reflectionClass->getShortName()->willReturn($shortName);
         $this->classMetadata->getReflectionClass()->willReturn($this->reflectionClass->reveal());
@@ -122,6 +132,6 @@ final class DatatableQueryBuilderTest extends TestCase
         $this->dataTable->getFeatures()->willReturn($this->features->reveal());
         $this->dataTable->getAjax()->willReturn($this->ajax->reveal());
 
-        return new DatatableQueryBuilder([], $this->dataTable->reveal());
+        new DatatableQueryBuilder([], $this->dataTable->reveal());
     }
 }

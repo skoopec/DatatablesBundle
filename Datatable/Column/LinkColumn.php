@@ -1,4 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -14,6 +14,9 @@ namespace Sg\DatatablesBundle\Datatable\Column;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function call_user_func;
 use function count;
 use function in_array;
@@ -135,6 +138,8 @@ class LinkColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderToMany(array &$row)
     {
@@ -152,21 +157,16 @@ class LinkColumn extends AbstractColumn
 
                 if (count($entries) > 0) {
                     foreach ($entries as $key => $entry) {
-                        $currentPath       = $path . '[' . $key . ']' . $value;
-                        $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
+                        $currentPath = $path . '[' . $key . ']' . $value;
 
-                        $content = $this->renderTemplate(
-                            $this->accessor->getValue($row, $currentPath),
-                            $row[$this->editable->getPk()],
-                            $currentObjectPath
-                        );
+                        $content = $this->renderTemplate($this->accessor->getValue($row, $currentPath));
 
                         $this->accessor->setValue($row, $currentPath, $content);
                     }
                 }
                 // no placeholder - leave this blank
             } else {
-                if (null !== $this->getFilterFunction()) {
+                if ($this->getFilterFunction() !== null) {
                     $entries = array_values(array_filter($entries, $this->getFilterFunction()));
                 }
 
@@ -211,14 +211,6 @@ class LinkColumn extends AbstractColumn
     public function getCellContentTemplate()
     {
         return '@SgDatatables/render/link.html.twig';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function renderPostCreateDatatableJsContent()
-    {
-        return null;
     }
 
     /**
@@ -428,7 +420,10 @@ class LinkColumn extends AbstractColumn
      *
      * @param string|null $data
      *
-     * @return mixed|string
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     private function renderTemplate($data)
     {

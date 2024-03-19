@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\DependencyInjection;
 
+use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -24,6 +25,7 @@ class SgDatatablesExtension extends Extension implements PrependExtensionInterfa
 {
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

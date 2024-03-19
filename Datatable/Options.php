@@ -11,6 +11,8 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
+use JsonException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function is_array;
 
@@ -238,6 +240,9 @@ class Options
      */
     protected $globalSearchType;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -314,6 +319,7 @@ class Options
 
     /**
      * @return array|int|null
+     * @throws JsonException
      */
     public function getDeferLoading()
     {
@@ -378,6 +384,7 @@ class Options
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getLengthMenu()
     {
@@ -402,6 +409,7 @@ class Options
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getOrder()
     {
@@ -466,6 +474,7 @@ class Options
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getOrderFixed()
     {
@@ -670,6 +679,7 @@ class Options
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getStripeClasses()
     {

@@ -1,4 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -16,6 +16,9 @@ use Exception;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function call_user_func;
 use function count;
 
@@ -41,6 +44,8 @@ class AttributeColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
@@ -61,36 +66,31 @@ class AttributeColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderToMany(array &$row)
     {
         $value = null;
         $path  = Helper::getDataPropertyPath($this->data, $value);
 
-        if ($this->accessor->isReadable($row, $path)) {
-            if ($this->isEditableContentRequired($row)) {
-                // e.g. comments[ ].createdBy.username
-                //     => $path = [comments]
-                //     => $value = [createdBy][username]
+        if ($this->accessor->isReadable($row, $path) && $this->isEditableContentRequired($row)) {
+            // e.g. comments[ ].createdBy.username
+            //     => $path = [comments]
+            //     => $value = [createdBy][username]
 
-                $entries = $this->accessor->getValue($row, $path);
+            $entries = $this->accessor->getValue($row, $path);
 
-                if (count($entries) > 0) {
-                    foreach ($entries as $key => $entry) {
-                        $currentPath       = $path . '[' . $key . ']' . $value;
-                        $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
+            if (count($entries) > 0) {
+                foreach ($entries as $key => $entry) {
+                    $currentPath = $path . '[' . $key . ']' . $value;
 
-                        $content = $this->renderTemplate(
-                            $this->accessor->getValue($row, $currentPath),
-                            $row[$this->editable->getPk()],
-                            $currentObjectPath
-                        );
+                    $content = $this->renderTemplate($this->accessor->getValue($row, $currentPath));
 
-                        $this->accessor->setValue($row, $currentPath, $content);
-                    }
+                    $this->accessor->setValue($row, $currentPath, $content);
                 }
-                // no placeholder - leave this blank
             }
+            // no placeholder - leave this blank
         }
 
         return $this;
@@ -102,14 +102,6 @@ class AttributeColumn extends AbstractColumn
     public function getCellContentTemplate()
     {
         return '@SgDatatables/render/attributeColumn.html.twig';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function renderPostCreateDatatableJsContent()
-    {
-        return null;
     }
 
     /**
@@ -171,7 +163,12 @@ class AttributeColumn extends AbstractColumn
     /**
      * Render template.
      *
-     * @return mixed|string
+     * @param string|null $data
+     *
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     private function renderTemplate(?string $data)
     {

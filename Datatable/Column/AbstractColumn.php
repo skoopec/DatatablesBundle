@@ -14,6 +14,7 @@ namespace Sg\DatatablesBundle\Datatable\Column;
 use Doctrine\DBAL\Types\Type as DoctrineType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Exception;
+use JsonException;
 use Sg\DatatablesBundle\Datatable\AddIfTrait;
 use Sg\DatatablesBundle\Datatable\Editable\EditableInterface;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
@@ -40,22 +41,22 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * Identifies a Data Column.
      */
-    public const DATA_COLUMN = 'data';
+    public const string DATA_COLUMN = 'data';
 
     /**
      * Identifies an Action Column.
      */
-    public const ACTION_COLUMN = 'action';
+    public const string ACTION_COLUMN = 'action';
 
     /**
      * Identifies a Multiselect Column.
      */
-    public const MULTISELECT_COLUMN = 'multiselect';
+    public const string MULTISELECT_COLUMN = 'multiselect';
 
     /**
      * Identifies a Virtual Column.
      */
-    public const VIRTUAL_COLUMN = 'virtual';
+    public const string VIRTUAL_COLUMN = 'virtual';
 
     //--------------------------------------------------------------------------------------------------
     // DataTables - Columns Options
@@ -241,7 +242,7 @@ abstract class AbstractColumn implements ColumnInterface
      * The Twig Environment to render Twig templates in Column rowes.
      * Is set in the ColumnBuilder.
      *
-     * @var Twig_Environment
+     * @var Environment
      */
     protected $twig;
 
@@ -369,11 +370,11 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function dqlConstraint($dql)
     {
-        if (true === $this->isCustomDql()) {
+        if ($this->isCustomDql() === true) {
             return true;
         }
 
-        return preg_match('/^[a-zA-Z0-9_\\-\\.]+$/', $dql) ? true : false;
+        return (bool)preg_match('/^[a-zA-Z0-9_\\-\\.]+$/', $dql);
     }
 
     /**
@@ -389,7 +390,7 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function isAssociation(): bool
     {
-        return (strpos((string)$this->dql, '.') === false) ? false : true;
+        return (str_contains((string)$this->dql, '.'));
     }
 
     /**
@@ -397,12 +398,8 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function isToManyAssociation()
     {
-        if (true === $this->isAssociation() && null !== $this->typeOfAssociation) {
-            if (in_array(ClassMetadataInfo::ONE_TO_MANY, $this->typeOfAssociation, true) || in_array(ClassMetadataInfo::MANY_TO_MANY, $this->typeOfAssociation, true)) {
-                return true;
-            }
-
-            return false;
+        if ($this->isAssociation() === true && $this->typeOfAssociation !== null) {
+            return in_array(ClassMetadataInfo::ONE_TO_MANY, $this->typeOfAssociation, true) || in_array(ClassMetadataInfo::MANY_TO_MANY, $this->typeOfAssociation, true);
         }
 
         return false;
@@ -469,13 +466,7 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function isEditableContentRequired(array $row)
     {
-        if (isset($this->editable)) {
-            if ($this->editable instanceof EditableInterface && true === $this->editable->callEditableIfClosure($row)) {
-                return true;
-            }
-        }
-
-        return false;
+        return isset($this->editable) && $this->editable instanceof EditableInterface && $this->editable->callEditableIfClosure($row) === true;
     }
 
     //-------------------------------------------------
@@ -624,6 +615,7 @@ abstract class AbstractColumn implements ColumnInterface
 
     /**
      * @return array|int|null
+     * @throws JsonException
      */
     public function getOrderData()
     {
@@ -648,6 +640,7 @@ abstract class AbstractColumn implements ColumnInterface
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getOrderSequence()
     {
@@ -835,10 +828,10 @@ abstract class AbstractColumn implements ColumnInterface
      */
     public function setDql($dql)
     {
-        if (true === $this->dqlConstraint($dql)) {
+        if ($this->dqlConstraint($dql) === true) {
             $this->dql = $dql;
         } else {
-            throw new Exception("AbstractColumn::setDql(): {$dql} is not valid for this Column.");
+            throw new Exception("AbstractColumn::setDql(): $dql is not valid for this Column.");
         }
 
         return $this;
@@ -865,7 +858,7 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /**
-     * @return Twig_Environment
+     * @return Environment
      */
     public function getTwig()
     {

@@ -74,7 +74,7 @@ class DatatableController extends AbstractController
             $value = $this->normalizeValue($originalTypeOfField, $value);
 
             // set new value
-            null !== $path ? $accessor->setValue($entity, $path, $value) : $accessor->setValue($entity, $field, $value);
+            $path !== null ? $accessor->setValue($entity, $path, $value) : $accessor->setValue($entity, $field, $value);
 
             // save all
             $entityManager->persist($entity);
@@ -139,7 +139,7 @@ class DatatableController extends AbstractController
 
                 break;
             default:
-                throw new Exception("DatatableController::prepareValue(): The field type {$originalTypeOfField} is not editable.");
+                throw new Exception("DatatableController::prepareValue(): The field type $originalTypeOfField is not editable.");
         }
 
         return $value;
@@ -152,15 +152,15 @@ class DatatableController extends AbstractController
     {
         $str = strtolower($str);
 
-        if ('null' === $str) {
+        if ($str === 'null') {
             return null;
         }
 
-        if ('true' === $str || '1' === $str) {
+        if ($str === 'true' || $str === '1') {
             return true;
         }
 
-        if ('false' === $str || '0' === $str) {
+        if ($str === 'false' || $str === '0') {
             return false;
         }
 

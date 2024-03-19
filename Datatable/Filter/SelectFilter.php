@@ -61,11 +61,12 @@ class SelectFilter extends AbstractFilter
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function addAndExpression(Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $searchTypeOfField, &$parameterCounter)
     {
         $searchValues = explode(',', $searchValue);
-        if (true === $this->multiple && is_array($searchValues) && count($searchValues) > 1) {
+        if ($this->multiple === true && is_array($searchValues) && count($searchValues) > 1) {
             $orExpr = $qb->expr()->orX();
 
             foreach ($searchValues as $searchValue) {

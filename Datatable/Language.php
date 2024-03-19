@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -113,6 +114,9 @@ class Language
      */
     protected $language;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();

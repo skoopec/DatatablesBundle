@@ -17,7 +17,9 @@ use Sg\DatatablesBundle\Datatable\Action\Action;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Sg\DatatablesBundle\Datatable\HtmlContainerTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use function call_user_func;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function count;
 use function is_array;
 use function is_bool;
@@ -50,7 +52,7 @@ class ActionColumn extends AbstractColumn
      */
     public function dqlConstraint($dql)
     {
-        return null === $dql ? true : false;
+        return $dql === null;
     }
 
     /**
@@ -78,6 +80,8 @@ class ActionColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
@@ -104,7 +108,7 @@ class ActionColumn extends AbstractColumn
                     }
                 }
             } elseif ($routeParameters instanceof Closure) {
-                $parameters[$actionKey] = call_user_func($routeParameters, $row);
+                $parameters[$actionKey] = $routeParameters($row);
             } else {
                 $parameters[$actionKey] = [];
             }
@@ -113,13 +117,13 @@ class ActionColumn extends AbstractColumn
             if (is_array($actionAttributes)) {
                 $attributes[$actionKey] = $actionAttributes;
             } elseif ($actionAttributes instanceof Closure) {
-                $attributes[$actionKey] = call_user_func($actionAttributes, $row);
+                $attributes[$actionKey] = $actionAttributes($row);
             } else {
                 $attributes[$actionKey] = [];
             }
 
             if ($action->isButton()) {
-                if (null !== $action->getButtonValue()) {
+                if ($action->getButtonValue() !== null) {
                     if (isset($row[$action->getButtonValue()])) {
                         $values[$actionKey] = $row[$action->getButtonValue()];
                     } else {
@@ -130,7 +134,7 @@ class ActionColumn extends AbstractColumn
                         $values[$actionKey] = (int)$values[$actionKey];
                     }
 
-                    if (true === $action->isButtonValuePrefix()) {
+                    if ($action->isButtonValuePrefix() === true) {
                         $values[$actionKey] = 'sg-datatables-' . $this->getDatatableName() . '-action-button-' . $actionKey . '-' . $values[$actionKey];
                     }
                 } else {
@@ -155,6 +159,7 @@ class ActionColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function renderToMany(array &$row)
     {

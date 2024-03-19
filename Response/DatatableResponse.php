@@ -13,6 +13,7 @@ namespace Sg\DatatablesBundle\Response;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Sg\DatatablesBundle\Datatable\Column\ColumnInterface;
 use Sg\DatatablesBundle\Datatable\DatatableInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,7 +78,7 @@ class DatatableResponse
     {
         $val = $this->validateColumnsPositions($datatable);
         if (is_int($val)) {
-            throw new Exception("DatatableResponse::setDatatable(): The Column with the index {$val} is on a not allowed position.");
+            throw new Exception("DatatableResponse::setDatatable(): The Column with the index $val is on a not allowed position.");
         }
 
         $this->datatable             = $datatable;
@@ -90,7 +91,7 @@ class DatatableResponse
      * Get DatatableQueryBuilder instance.
      *
      * @return DatatableQueryBuilder
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function getDatatableQueryBuilder()
     {
@@ -114,11 +115,11 @@ class DatatableResponse
      */
     public function getData($countAllResults = true, $outputWalkers = false, $fetchJoinCollection = true)
     {
-        if (null === $this->datatable) {
+        if ($this->datatable === null) {
             throw new Exception('DatatableResponse::getResponse(): Set a Datatable class with setDatatable().');
         }
 
-        if (null === $this->datatableQueryBuilder) {
+        if ($this->datatableQueryBuilder === null) {
             throw new Exception('DatatableResponse::getResponse(): A DatatableQueryBuilder instance is needed. Call getDatatableQueryBuilder().');
         }
 
@@ -131,7 +132,7 @@ class DatatableResponse
         $outputHeader = [
             'draw'            => (int)$this->requestParams['draw'],
             'recordsFiltered' => count($paginator),
-            'recordsTotal'    => true === $countAllResults ? (int)$this->datatableQueryBuilder->getCountAllResults() : 0,
+            'recordsTotal'    => $countAllResults === true ? $this->datatableQueryBuilder->getCountAllResults() : 0,
         ];
 
         return array_merge($outputHeader, $formatter->getOutput());
@@ -160,11 +161,11 @@ class DatatableResponse
      *
      * @return DatatableQueryBuilder
      * @throws Exception
-     *
+     * @throws InvalidArgumentException
      */
     private function createDatatableQueryBuilder()
     {
-        if (null === $this->datatable) {
+        if ($this->datatable === null) {
             throw new Exception('DatatableResponse::getDatatableQueryBuilder(): Set a Datatable class with setDatatable().');
         }
 
@@ -184,11 +185,11 @@ class DatatableResponse
         $parameterBag = null;
         $type         = $this->datatable->getAjax()->getMethod();
 
-        if ('GET' === strtoupper($type)) {
+        if (strtoupper($type) === 'GET') {
             $parameterBag = $this->request->query;
         }
 
-        if ('POST' === strtoupper($type)) {
+        if (strtoupper($type) === 'POST') {
             $parameterBag = $this->request->request;
         }
 
@@ -216,7 +217,7 @@ class DatatableResponse
                     unset($allowedPositions[ColumnInterface::LAST_POSITION]);
                 }
 
-                if (false === array_key_exists($index, $allowedPositions)) {
+                if (array_key_exists($index, $allowedPositions) === false) {
                     return $index;
                 }
             }

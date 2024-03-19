@@ -118,7 +118,7 @@ class Select2Filter extends SelectFilter
         $resolver->setAllowedTypes('cache', 'bool');
 
         $resolver->setNormalizer('allow_clear', function (Options $options, $value) {
-            if (null === $options['placeholder'] && true === $value) {
+            if ($options['placeholder'] === null && $value === true) {
                 throw new Exception('Select2Filter::configureOptions(): The allow_clear option will only work if a placeholder is set.');
             }
 
@@ -138,18 +138,6 @@ class Select2Filter extends SelectFilter
     public function getPlaceholder()
     {
         return $this->placeholder;
-    }
-
-    /**
-     * @param string|null $placeholder
-     *
-     * @return $this
-     */
-    public function setPlaceholder($placeholder)
-    {
-        $this->placeholder = $placeholder;
-
-        return $this;
     }
 
     /**

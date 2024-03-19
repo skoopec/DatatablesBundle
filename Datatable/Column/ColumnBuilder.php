@@ -12,10 +12,11 @@
 namespace Sg\DatatablesBundle\Datatable\Column;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\MappingException;
 use Exception;
 use Psr\Cache\InvalidArgumentException;
+use ReflectionException;
 use Sg\DatatablesBundle\Datatable\Factory;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
@@ -37,7 +38,7 @@ class ColumnBuilder
     /**
      * The Twig Environment.
      *
-     * @var Twig_Environment
+     * @var Environment
      */
     private $twig;
 
@@ -120,7 +121,7 @@ class ColumnBuilder
      *
      * @return $this
      * @throws Exception
-     *
+     * @throws InvalidArgumentException
      */
     public function add($dql, $class, array $options = [])
     {
@@ -188,7 +189,7 @@ class ColumnBuilder
      */
     public function getUniqueColumn($columnType)
     {
-        return array_key_exists($columnType, $this->uniqueColumns) ? $this->uniqueColumns[$columnType] : null;
+        return $this->uniqueColumns[$columnType] ?? null;
     }
 
     //-------------------------------------------------
@@ -199,9 +200,9 @@ class ColumnBuilder
      * @param string $entityName
      *
      * @return ClassMetadata
-     * @throws \Doctrine\Persistence\Mapping\MappingException
      * @throws InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
+     * @throws Exception
      */
     private function getMetadata($entityName)
     {
@@ -222,6 +223,7 @@ class ColumnBuilder
      *
      * @return ClassMetadata
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     private function getMetadataFromAssociation($association, ClassMetadata $metadata)
     {
@@ -231,19 +233,19 @@ class ColumnBuilder
     }
 
     /**
+     * @param ClassMetadata $metadata
+     * @param AbstractColumn $column
      * @param string $field
      *
-     * @return $this
+     * @return void
      */
-    private function setTypeOfField(ClassMetadata $metadata, AbstractColumn $column, $field)
+    private function setTypeOfField(ClassMetadata $metadata, AbstractColumn $column, $field): void
     {
-        if (null === $column->getTypeOfField()) {
+        if ($column->getTypeOfField() === null) {
             $column->setTypeOfField($metadata->getTypeOfField($field));
         }
 
         $column->setOriginalTypeOfField($metadata->getTypeOfField($field));
-
-        return $this;
     }
 
     /**
@@ -253,10 +255,10 @@ class ColumnBuilder
      * @param array $options
      * @param AbstractColumn $column
      *
-     * @return $this
+     * @return void
      * @throws Exception
      */
-    private function handleDqlProperties($dql, array $options, AbstractColumn $column)
+    private function handleDqlProperties($dql, array $options, AbstractColumn $column): void
     {
         // the Column 'data' property has normally the same value as 'dql'
         $column->setData($dql);
@@ -267,23 +269,21 @@ class ColumnBuilder
         } else {
             $column->setCustomDql(true);
         }
-
-        return $this;
     }
 
     /**
      * Set environment properties.
      *
-     * @return $this
+     * @param AbstractColumn $column
+     *
+     * @return void
      */
-    private function setEnvironmentProperties(AbstractColumn $column)
+    private function setEnvironmentProperties(AbstractColumn $column): void
     {
         $column->setDatatableName($this->datatableName);
         $column->setEntityClassName($this->entityClassName);
         $column->setTwig($this->twig);
         $column->setRouter($this->router);
-
-        return $this;
     }
 
     /**
@@ -292,16 +292,16 @@ class ColumnBuilder
      * @param string $dql
      * @param AbstractColumn $column
      *
-     * @return $this
-     * @throws MappingException
+     * @return void
+     * @throws Exception|InvalidArgumentException
      */
-    private function setTypeProperties($dql, AbstractColumn $column)
+    private function setTypeProperties($dql, AbstractColumn $column): void
     {
-        if (true === $column->isSelectColumn() && false === $column->isCustomDql()) {
+        if ($column->isSelectColumn() === true && $column->isCustomDql() === false) {
             $metadata = $this->metadata;
             $parts    = explode('.', $dql);
             // add associations types
-            if (true === $column->isAssociation()) {
+            if ($column->isAssociation() === true) {
                 while (count($parts) > 1) {
                     $currentPart = array_shift($parts);
 
@@ -319,46 +319,44 @@ class ColumnBuilder
             $column->setTypeOfAssociation(null);
             $column->setOriginalTypeOfField(null);
         }
-
-        return $this;
     }
 
     /**
      * Adds a Column.
      *
      * @param string $dql
+     * @param AbstractColumn $column
      *
-     * @return $this
+     * @return void
      */
-    private function addColumn($dql, AbstractColumn $column)
+    private function addColumn($dql, AbstractColumn $column): void
     {
-        if (true === $column->callAddIfClosure()) {
+        if ($column->callAddIfClosure() === true) {
             $this->columns[]         = $column;
             $index                   = count($this->columns) - 1;
             $this->columnNames[$dql] = $index;
             $column->setIndex($index);
 
             // Use the Column-Index as data source for Columns with 'dql' === null
-            if (null === $column->getDql() && null === $column->getData()) {
+            if ($column->getDql() === null && $column->getData() === null) {
                 $column->setData($index);
             }
 
-            if (true === $column->isUnique()) {
+            if ($column->isUnique() === true) {
                 $this->uniqueColumns[$column->getColumnType()] = $column;
             }
         }
-
-        return $this;
     }
 
     /**
      * Removes a Column.
      *
      * @param string $dql
+     * @param AbstractColumn $column
      *
-     * @return $this
+     * @return void
      */
-    private function removeColumn($dql, AbstractColumn $column)
+    private function removeColumn($dql, AbstractColumn $column): void
     {
         // Remove column from columns
         foreach ($this->columns as $k => $c) {
@@ -389,25 +387,21 @@ class ColumnBuilder
                 break;
             }
         }
-
-        return $this;
     }
 
     /**
      * Check unique.
      *
-     * @return $this
+     * @return void
      * @throws Exception
      *
      */
-    private function checkUnique(): self
+    private function checkUnique(): void
     {
         $unique = $this->uniqueColumns;
 
         if (count(array_unique($unique)) < count($unique)) {
             throw new Exception('ColumnBuilder::checkUnique(): Unique columns are only allowed once.');
         }
-
-        return $this;
     }
 }

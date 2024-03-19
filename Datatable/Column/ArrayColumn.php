@@ -38,9 +38,7 @@ class ArrayColumn extends Column
         $arrayField         = '';
         $isArrayAssociative = $this->isAssociative($array);
         foreach ($array as $key => $arrayElement) {
-            for ($i = 0; $i < $tab; ++$i) {
-                $arrayField .= '&nbsp&nbsp';
-            }
+            $arrayField = str_repeat('&nbsp&nbsp', $tab);
 
             if ($isArrayAssociative) {
                 $arrayField .= $key . ': ';

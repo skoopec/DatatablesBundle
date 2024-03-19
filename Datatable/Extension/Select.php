@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable\Extension;
 
+use Exception;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -67,6 +68,9 @@ class Select
      */
     protected $style;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();

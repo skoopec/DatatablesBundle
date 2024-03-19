@@ -14,6 +14,7 @@ namespace Sg\DatatablesBundle\Datatable\Filter;
 use DateTime;
 use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -35,10 +36,11 @@ class DateRangeFilter extends AbstractFilter
 
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
     public function addAndExpression(Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $searchTypeOfField, &$parameterCounter)
     {
-        if (strpos($searchValue, '-') === false) {
+        if (!str_contains($searchValue, '-')) {
             return $andExpr;
         }
         [$_dateStart, $_dateEnd] = explode(' - ', $searchValue);

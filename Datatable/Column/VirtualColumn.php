@@ -60,7 +60,7 @@ class VirtualColumn extends Column
         $resolver->setAllowedTypes('search_column', ['null', 'string', 'array']);
 
         $resolver->setNormalizer('orderable', function (Options $options, $value) {
-            if (null === $options['order_column'] && true === $value) {
+            if ($options['order_column'] === null && $value === true) {
                 throw new Exception('VirtualColumn::configureOptions(): For the orderable option, order_column should not be null.');
             }
 
@@ -68,7 +68,7 @@ class VirtualColumn extends Column
         });
 
         $resolver->setNormalizer('searchable', function (Options $options, $value) {
-            if (null === $options['search_column'] && true === $value) {
+            if ($options['search_column'] === null && $value === true) {
                 throw new Exception('VirtualColumn::configureOptions(): For the searchable option, search_column should not be null.');
             }
 

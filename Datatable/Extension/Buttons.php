@@ -12,6 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable\Extension;
 
 use Exception;
+use JsonException;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function count;
@@ -44,6 +45,9 @@ class Buttons
      */
     protected $createButtons;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -75,6 +79,7 @@ class Buttons
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getShowButtons()
     {

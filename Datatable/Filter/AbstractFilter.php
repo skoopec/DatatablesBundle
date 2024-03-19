@@ -15,6 +15,7 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Expr\Composite;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -81,6 +82,9 @@ abstract class AbstractFilter implements FilterInterface
      */
     protected $placeholderText;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();

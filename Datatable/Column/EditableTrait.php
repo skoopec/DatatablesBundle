@@ -53,7 +53,7 @@ trait EditableTrait
     public function setEditable($editableClassAndOptions)
     {
         if (is_array($editableClassAndOptions)) {
-            if (2 !== count($editableClassAndOptions)) {
+            if (count($editableClassAndOptions) !== 2) {
                 throw new Exception('EditableTrait::setEditable(): Two arguments expected.');
             }
 

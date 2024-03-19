@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 
+/** @noinspection UsingInclusionReturnValueInspection */
 if (! ($loader = @include __DIR__.'/../vendor/autoload.php')) {
     echo <<<'EOT'
 You need to install the project dependencies using Composer:

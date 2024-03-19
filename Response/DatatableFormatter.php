@@ -69,7 +69,7 @@ class DatatableFormatter
             // Format custom DQL fields output ('custom.dql.name' => $row['custom']['dql']['name'] = 'value')
             foreach ($columns as $column) {
                 // @noinspection PhpUndefinedMethodInspection
-                if (true === $column->isCustomDql()) {
+                if ($column->isCustomDql() === true) {
                     $columnAlias = str_replace('.', '_', $column->getData());
                     $columnPath  = '[' . str_replace('.', '][', $column->getData()) . ']';
                     // @noinspection PhpUndefinedMethodInspection
@@ -86,16 +86,14 @@ class DatatableFormatter
                 $data = $column->getData();
 
                 // @noinspection PhpUndefinedMethodInspection
-                if (false === $column->isAssociation()) {
-                    if (null !== $dql && $dql !== $data && false === array_key_exists($data, $row)) {
-                        $row[$data] = $row[$dql];
-                        unset($row[$dql]);
-                    }
+                if (($column->isAssociation() === false) && $dql !== null && $dql !== $data && array_key_exists($data, $row) === false) {
+                    $row[$data] = $row[$dql];
+                    unset($row[$dql]);
                 }
             }
 
             // 2. Call the the lineFormatter to format row items
-            if (null !== $lineFormatter && is_callable($lineFormatter)) {
+            if ($lineFormatter !== null && is_callable($lineFormatter)) {
                 $row = call_user_func($datatable->getLineFormatter(), $row);
             }
 

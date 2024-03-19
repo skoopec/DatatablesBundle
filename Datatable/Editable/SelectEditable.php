@@ -12,6 +12,7 @@
 namespace Sg\DatatablesBundle\Datatable\Editable;
 
 use Exception;
+use JsonException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -63,6 +64,7 @@ class SelectEditable extends AbstractEditable
 
     /**
      * @return array
+     * @throws JsonException
      */
     public function getSource()
     {

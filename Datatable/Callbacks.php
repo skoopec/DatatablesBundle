@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function is_array;
 
@@ -123,6 +124,9 @@ class Callbacks
      */
     protected $stateSaveParams;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -190,7 +194,7 @@ class Callbacks
      * @param array|null $createdRow
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCreatedRow($createdRow)
     {
@@ -215,7 +219,7 @@ class Callbacks
      * @param array|null $drawCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDrawCallback($drawCallback)
     {
@@ -240,7 +244,7 @@ class Callbacks
      * @param array|null $footerCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setFooterCallback($footerCallback)
     {
@@ -265,7 +269,7 @@ class Callbacks
      * @param array|null $formatNumber
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setFormatNumber($formatNumber)
     {
@@ -290,7 +294,7 @@ class Callbacks
      * @param array|null $headerCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setHeaderCallback($headerCallback)
     {
@@ -315,7 +319,7 @@ class Callbacks
      * @param array|null $infoCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setInfoCallback($infoCallback)
     {
@@ -340,7 +344,7 @@ class Callbacks
      * @param array|null $initComplete
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setInitComplete($initComplete)
     {
@@ -365,7 +369,7 @@ class Callbacks
      * @param array|null $preDrawCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setPreDrawCallback($preDrawCallback)
     {
@@ -390,7 +394,7 @@ class Callbacks
      * @param array|null $rowCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setRowCallback($rowCallback)
     {
@@ -415,7 +419,7 @@ class Callbacks
      * @param array|null $stateLoadCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateLoadCallback($stateLoadCallback)
     {
@@ -440,7 +444,7 @@ class Callbacks
      * @param array|null $stateLoaded
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateLoaded($stateLoaded)
     {
@@ -465,7 +469,7 @@ class Callbacks
      * @param array|null $stateLoadParams
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateLoadParams($stateLoadParams)
     {
@@ -490,7 +494,7 @@ class Callbacks
      * @param array|null $stateSaveCallback
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateSaveCallback($stateSaveCallback)
     {
@@ -515,7 +519,7 @@ class Callbacks
      * @param array|null $stateSaveParams
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStateSaveParams($stateSaveParams)
     {

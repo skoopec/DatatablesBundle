@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -125,6 +126,9 @@ class Features
      */
     protected $stateSave;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();

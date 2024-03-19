@@ -20,7 +20,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Translation\TranslatorInterface as LegacyTranslatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use function get_class;
@@ -168,14 +167,15 @@ abstract class AbstractDatatable implements DatatableInterface
         if (isset(self::$uniqueCounter[$this->getName()])) {
             $this->uniqueId = ++self::$uniqueCounter[$this->getName()];
         } else {
-            $this->uniqueId = self::$uniqueCounter[$this->getName()] = 1;
+            self::$uniqueCounter[$this->getName()] = 1;
+            $this->uniqueId                        = 1;
         }
 
         $this->authorizationChecker = $authorizationChecker;
         $this->securityToken        = $securityToken;
 
-        if (!($translator instanceof LegacyTranslatorInterface) && !($translator instanceof TranslatorInterface)) {
-            throw new InvalidArgumentException(sprintf('The $translator argument of %s must be an instance of %s or %s, a %s was given.', static::class, LegacyTranslatorInterface::class,
+        if (!($translator instanceof TranslatorInterface)) {
+            throw new InvalidArgumentException(sprintf('The $translator argument of %s must be an instance of %s, a %s was given.', static::class,
                 TranslatorInterface::class, get_class($translator)));
         }
         $this->translator = $translator;
@@ -289,7 +289,7 @@ abstract class AbstractDatatable implements DatatableInterface
         $options = [];
 
         foreach ($entities as $entity) {
-            if (true === $this->accessor->isReadable($entity, $keyFrom) && true === $this->accessor->isReadable($entity, $valueFrom)) {
+            if ($this->accessor->isReadable($entity, $keyFrom) === true && $this->accessor->isReadable($entity, $valueFrom) === true) {
                 $options[$this->accessor->getValue($entity, $keyFrom)] = $this->accessor->getValue($entity, $valueFrom);
             }
         }
@@ -325,7 +325,7 @@ abstract class AbstractDatatable implements DatatableInterface
     private function validateName()
     {
         $name = $this->getName();
-        if (1 !== preg_match(self::NAME_REGEX, $name)) {
+        if (preg_match(self::NAME_REGEX, $name) !== 1) {
             throw new LogicException(sprintf('AbstractDatatable::validateName(): "%s" is invalid Datatable Name. Name can only contain letters, numbers, underscore and dashes.', $name));
         }
     }

@@ -1,4 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
 
 /*
  * This file is part of the SgDatatablesBundle package.
@@ -15,6 +15,9 @@ use Sg\DatatablesBundle\Datatable\Editable\EditableInterface;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function count;
 
 /**
@@ -33,16 +36,16 @@ class Column extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
         $path = Helper::getDataPropertyPath($this->data);
 
-        if ($this->accessor->isReadable($row, $path)) {
-            if ($this->isEditableContentRequired($row)) {
-                $content = $this->renderTemplate($this->accessor->getValue($row, $path), $row[$this->editable->getPk()]);
-                $this->accessor->setValue($row, $path, $content);
-            }
+        if ($this->accessor->isReadable($row, $path) && $this->isEditableContentRequired($row)) {
+            $content = $this->renderTemplate($this->accessor->getValue($row, $path), $row[$this->editable->getPk()]);
+            $this->accessor->setValue($row, $path, $content);
         }
 
         return $this;
@@ -50,36 +53,36 @@ class Column extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderToMany(array &$row)
     {
         $value = null;
         $path  = Helper::getDataPropertyPath($this->data, $value);
 
-        if ($this->accessor->isReadable($row, $path)) {
-            if ($this->isEditableContentRequired($row)) {
-                // e.g. comments[ ].createdBy.username
-                //     => $path = [comments]
-                //     => $value = [createdBy][username]
+        if ($this->accessor->isReadable($row, $path) && $this->isEditableContentRequired($row)) {
+            // e.g. comments[ ].createdBy.username
+            //     => $path = [comments]
+            //     => $value = [createdBy][username]
 
-                $entries = $this->accessor->getValue($row, $path);
+            $entries = $this->accessor->getValue($row, $path);
 
-                if (count($entries) > 0) {
-                    foreach ($entries as $key => $entry) {
-                        $currentPath       = $path . '[' . $key . ']' . $value;
-                        $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
+            if (count($entries) > 0) {
+                foreach ($entries as $key => $entry) {
+                    $currentPath       = $path . '[' . $key . ']' . $value;
+                    $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
-                        $content = $this->renderTemplate(
-                            $this->accessor->getValue($row, $currentPath),
-                            $row[$this->editable->getPk()],
-                            $currentObjectPath
-                        );
+                    $content = $this->renderTemplate(
+                        $this->accessor->getValue($row, $currentPath),
+                        $row[$this->editable->getPk()],
+                        $currentObjectPath
+                    );
 
-                        $this->accessor->setValue($row, $currentPath, $content);
-                    }
+                    $this->accessor->setValue($row, $currentPath, $content);
                 }
-                // no placeholder - leave this blank
             }
+            // no placeholder - leave this blank
         }
 
         return $this;
@@ -95,6 +98,8 @@ class Column extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderPostCreateDatatableJsContent()
     {
@@ -145,9 +150,12 @@ class Column extends AbstractColumn
      *
      * @param string|null $data
      * @param string $pk
-     * @param string|null $path
+     * @param null $path
      *
-     * @return mixed|string
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     private function renderTemplate($data, $pk, $path = null)
     {

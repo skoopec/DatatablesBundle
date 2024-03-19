@@ -17,6 +17,9 @@ use Sg\DatatablesBundle\Datatable\Filter\SelectFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function count;
 use function in_array;
 
@@ -32,12 +35,12 @@ class BooleanColumn extends AbstractColumn
     /**
      * @internal
      */
-    public const RENDER_TRUE_VALUE = 'true';
+    public const string RENDER_TRUE_VALUE = 'true';
 
     /**
      * @internal
      */
-    public const RENDER_FALSE_VALUE = 'false';
+    public const string RENDER_FALSE_VALUE = 'false';
 
     /**
      * The icon for a value that is true.
@@ -77,13 +80,15 @@ class BooleanColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
         $path = Helper::getDataPropertyPath($this->data);
 
         if ($this->accessor->isReadable($row, $path)) {
-            if (true === $this->isEditableContentRequired($row)) {
+            if ($this->isEditableContentRequired($row) === true) {
                 $content = $this->renderTemplate($this->accessor->getValue($row, $path), $row[$this->editable->getPk()]);
             } else {
                 $content = $this->renderTemplate($this->accessor->getValue($row, $path));
@@ -97,6 +102,8 @@ class BooleanColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderToMany(array &$row)
     {
@@ -111,7 +118,7 @@ class BooleanColumn extends AbstractColumn
                     $currentPath       = $path . '[' . $key . ']' . $value;
                     $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
-                    if (true === $this->isEditableContentRequired($row)) {
+                    if ($this->isEditableContentRequired($row) === true) {
                         $content = $this->renderTemplate(
                             $this->accessor->getValue($row, $currentPath),
                             $row[$this->editable->getPk()],
@@ -133,13 +140,15 @@ class BooleanColumn extends AbstractColumn
     /**
      * {@inheritdoc}
      */
-    public function getCellContentTemplate()
+    public function getCellContentTemplate(): string
     {
         return '@SgDatatables/render/boolean.html.twig';
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderPostCreateDatatableJsContent()
     {
@@ -195,7 +204,7 @@ class BooleanColumn extends AbstractColumn
         $resolver->setAllowedTypes('editable', ['null', 'array']);
 
         $resolver->setNormalizer('true_label', function (Options $options, $value) {
-            if (null === $options['true_icon'] && null === $value) {
+            if ($options['true_icon'] === null && $value === null) {
                 $value = self::RENDER_TRUE_VALUE;
             }
 
@@ -203,7 +212,7 @@ class BooleanColumn extends AbstractColumn
         });
 
         $resolver->setNormalizer('false_label', function (Options $options, $value) {
-            if (null === $options['false_icon'] && null === $value) {
+            if ($options['false_icon'] === null && $value === null) {
                 $value = self::RENDER_FALSE_VALUE;
             }
 
@@ -305,10 +314,13 @@ class BooleanColumn extends AbstractColumn
      * Render template.
      *
      * @param string|null $data
-     * @param string|null $pk
-     * @param string|null $path
+     * @param null $pk
+     * @param null $path
      *
-     * @return mixed|string
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     private function renderTemplate($data, $pk = null, $path = null)
     {
@@ -322,7 +334,7 @@ class BooleanColumn extends AbstractColumn
         ];
 
         // editable vars
-        if (null !== $pk) {
+        if ($pk !== null) {
             $renderVars = array_merge($renderVars, [
                 'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
                 'pk'                             => $pk,

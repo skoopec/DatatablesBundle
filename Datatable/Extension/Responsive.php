@@ -36,6 +36,9 @@ class Responsive
      */
     protected $details;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -80,8 +83,8 @@ class Responsive
     {
         if (is_array($details)) {
             foreach ($details as $key => $value) {
-                if (false === in_array($key, ['type', 'target', 'renderer', 'display'], true)) {
-                    throw new Exception("Responsive::setDetails(): {$key} is not an valid option.");
+                if (in_array($key, ['type', 'target', 'renderer', 'display'], true) === false) {
+                    throw new Exception("Responsive::setDetails(): $key is not an valid option.");
                 }
             }
 

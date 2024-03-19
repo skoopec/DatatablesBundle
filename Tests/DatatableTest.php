@@ -13,10 +13,12 @@ namespace Sg\DatatablesBundle\Tests;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Exception;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionException;
 use Sg\DatatablesBundle\Datatable\AbstractDatatable;
 use Sg\DatatablesBundle\Tests\Datatables\PostDatatable;
 use Symfony\Component\Routing\RouterInterface;
@@ -33,6 +35,9 @@ use Twig\Environment;
  */
 final class DatatableTest extends TestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testCreate()
     {
         $tableClass = PostDatatable::class;
@@ -51,17 +56,20 @@ final class DatatableTest extends TestCase
                    ->getMock();
 
         // @noinspection PhpUndefinedMethodInspection
-        $em->expects(static::any())
+        $em->expects(self::any())
            ->method('getClassMetadata')
            ->willReturn($this->getClassMetadataMock());
 
         $table = new $tableClass($authorizationChecker, $securityToken, $translator, $router, $em, $twig);
 
-        static::assertSame('post_datatable', $table->getName());
+        self::assertSame('post_datatable', $table->getName());
 
         $table->buildDatatable();
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testInvalidName()
     {
         $authorizationChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -78,7 +86,7 @@ final class DatatableTest extends TestCase
                    ->getMock();
 
         // @noinspection PhpUndefinedMethodInspection
-        $em->expects(static::any())
+        $em->expects(self::any())
            ->method('getClassMetadata')
            ->willReturn($this->getClassMetadataMock());
 
@@ -86,7 +94,7 @@ final class DatatableTest extends TestCase
                      ->disableOriginalConstructor()
                      ->setMethods(['getName'])
                      ->getMockForAbstractClass();
-        $mock->expects(static::any())
+        $mock->expects(self::any())
              ->method('getName')
              ->willReturn('invalid.name');
 
@@ -101,13 +109,13 @@ final class DatatableTest extends TestCase
      */
     public function getClassMetadataMock()
     {
-        $mock = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
+        $mock = $this->getMockBuilder(ClassMetadata::class)
                      ->disableOriginalConstructor()
                      ->setMethods(['getEntityShortName'])
                      ->getMock();
 
         // @noinspection PhpUndefinedMethodInspection
-        $mock->expects(static::any())
+        $mock->expects(self::any())
              ->method('getEntityShortName')
              ->willReturn('{entityShortName}');
 

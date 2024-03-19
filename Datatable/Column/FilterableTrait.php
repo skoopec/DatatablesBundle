@@ -54,7 +54,7 @@ trait FilterableTrait
      */
     public function setFilter(array $filterClassAndOptions)
     {
-        if (2 !== count($filterClassAndOptions)) {
+        if (count($filterClassAndOptions) !== 2) {
             throw new Exception('AbstractColumn::setFilter(): Two arguments expected.');
         }
 

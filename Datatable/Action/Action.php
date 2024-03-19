@@ -125,6 +125,8 @@ class Action
 
     /**
      * @param string $datatableName
+     *
+     * @throws Exception
      */
     public function __construct($datatableName)
     {

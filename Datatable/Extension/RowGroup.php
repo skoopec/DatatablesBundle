@@ -93,6 +93,9 @@ class RowGroup
      */
     protected $startClassName;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -178,13 +181,13 @@ class RowGroup
      */
     public function setStartRender($startRender)
     {
-        if (false === array_key_exists('template', $startRender)) {
+        if (array_key_exists('template', $startRender) === false) {
             throw new Exception('RowGroup::setStartRender(): The "template" option is required.');
         }
 
         foreach ($startRender as $key => $value) {
-            if (false === in_array($key, ['template', 'vars'], true)) {
-                throw new Exception("RowGroup::setStartRender(): {$key} is not a valid option.");
+            if (in_array($key, ['template', 'vars'], true) === false) {
+                throw new Exception("RowGroup::setStartRender(): $key is not a valid option.");
             }
         }
 
@@ -209,13 +212,13 @@ class RowGroup
      */
     public function setEndRender($endRender)
     {
-        if (false === array_key_exists('template', $endRender)) {
+        if (array_key_exists('template', $endRender) === false) {
             throw new Exception('RowGroup::setEndRender(): The "template" option is required.');
         }
 
         foreach ($endRender as $key => $value) {
-            if (false === in_array($key, ['template', 'vars'], true)) {
-                throw new Exception("RowGroup::setEndRender(): {$key} is not a valid option.");
+            if (in_array($key, ['template', 'vars'], true) === false) {
+                throw new Exception("RowGroup::setEndRender(): $key is not a valid option.");
             }
         }
 

@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable\Extension;
 
+use Exception;
 use Sg\DatatablesBundle\Datatable\OptionsTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function is_array;
@@ -121,6 +122,9 @@ class Button
      */
     protected $buttonOptions;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -186,7 +190,7 @@ class Button
      * @param array|null $action
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setAction($action)
     {
@@ -211,7 +215,7 @@ class Button
      * @param array|null $available
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setAvailable($available)
     {
@@ -256,7 +260,7 @@ class Button
      * @param array|null $destroy
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDestroy($destroy)
     {
@@ -321,7 +325,7 @@ class Button
      * @param array|null $init
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setInit($init)
     {

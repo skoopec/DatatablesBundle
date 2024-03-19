@@ -15,6 +15,9 @@ use Exception;
 use Sg\DatatablesBundle\Datatable\Action\MultiselectAction;
 use Sg\DatatablesBundle\Datatable\RenderIfTrait;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function array_key_exists;
 use function count;
 use function is_array;
@@ -90,6 +93,8 @@ class MultiselectColumn extends ActionColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
@@ -99,7 +104,7 @@ class MultiselectColumn extends ActionColumn
             $value = (int)$value;
         }
 
-        if (true === $this->valuePrefix) {
+        if ($this->valuePrefix === true) {
             $value = 'sg-datatables-' . $this->getDatatableName() . '-checkbox-' . $value;
         }
 
@@ -239,7 +244,7 @@ class MultiselectColumn extends ActionColumn
             }
 
             if (array_key_exists('name', $attributes)) {
-                $attributes['name'] = $attributes['name'] . '[]';
+                $attributes['name'] .= '[]';
             } else {
                 $attributes['name'] = $value . '[]';
             }

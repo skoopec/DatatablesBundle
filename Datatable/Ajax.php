@@ -11,6 +11,8 @@
 
 namespace Sg\DatatablesBundle\Datatable;
 
+use Exception;
+use JsonException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use function is_array;
 
@@ -59,6 +61,9 @@ class Ajax
      */
     protected $pipeline;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->initOptions();
@@ -158,6 +163,7 @@ class Ajax
 
     /**
      * @return array|null
+     * @throws JsonException
      */
     public function getData()
     {

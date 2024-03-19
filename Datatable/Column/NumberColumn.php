@@ -15,6 +15,9 @@ namespace Sg\DatatablesBundle\Datatable\Column;
 use NumberFormatter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function count;
 use function is_float;
 
@@ -53,13 +56,15 @@ class NumberColumn extends Column
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderSingleField(array &$row)
     {
         $path = Helper::getDataPropertyPath($this->data);
 
         if ($this->accessor->isReadable($row, $path)) {
-            if (true === $this->isEditableContentRequired($row)) {
+            if ($this->isEditableContentRequired($row) === true) {
                 $content = $this->renderTemplate($this->accessor->getValue($row, $path), $row[$this->editable->getPk()]);
             } else {
                 $content = $this->renderTemplate($this->accessor->getValue($row, $path));
@@ -73,6 +78,8 @@ class NumberColumn extends Column
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderToMany(array &$row)
     {
@@ -81,26 +88,23 @@ class NumberColumn extends Column
 
         $entries = $this->accessor->getValue($row, $path);
 
-        if ($this->accessor->isReadable($row, $path)) {
-            if (count($entries) > 0) {
-                foreach ($entries as $key => $entry) {
-                    $currentPath       = $path . '[' . $key . ']' . $value;
-                    $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
+        if ($this->accessor->isReadable($row, $path) && count($entries) > 0) {
+            foreach ($entries as $key => $entry) {
+                $currentPath       = $path . '[' . $key . ']' . $value;
+                $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
-                    if (true === $this->isEditableContentRequired($row)) {
-                        $content = $this->renderTemplate(
-                            $this->accessor->getValue($row, $currentPath),
-                            $row[$this->editable->getPk()],
-                            $currentObjectPath
-                        );
-                    } else {
-                        $content = $this->renderTemplate($this->accessor->getValue($row, $currentPath));
-                    }
-
-                    $this->accessor->setValue($row, $currentPath, $content);
+                if ($this->isEditableContentRequired($row) === true) {
+                    $content = $this->renderTemplate(
+                        $this->accessor->getValue($row, $currentPath),
+                        $row[$this->editable->getPk()],
+                        $currentObjectPath
+                    );
+                } else {
+                    $content = $this->renderTemplate($this->accessor->getValue($row, $currentPath));
                 }
+
+                $this->accessor->setValue($row, $currentPath, $content);
             }
-            // no placeholder - leave this blank
         }
 
         return $this;
@@ -211,19 +215,22 @@ class NumberColumn extends Column
      * Render template.
      *
      * @param string|null $data
-     * @param string|null $pk
-     * @param string|null $path
+     * @param null $pk
+     * @param null $path
      *
-     * @return mixed|string
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     private function renderTemplate($data, $pk = null, $path = null)
     {
-        if (true === $this->useFormatCurrency) {
-            if (false === is_float($data)) {
+        if ($this->useFormatCurrency === true) {
+            if (is_float($data) === false) {
                 $data = (float)$data;
             }
 
-            if (null === $this->currency) {
+            if ($this->currency === null) {
                 $this->currency = $this->formatter->getSymbol(NumberFormatter::INTL_CURRENCY_SYMBOL);
             }
 

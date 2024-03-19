@@ -13,10 +13,14 @@
 namespace Sg\DatatablesBundle\Datatable\Column;
 
 use Exception;
+use Random\RandomException;
 use Sg\DatatablesBundle\Datatable\Editable\EditableInterface;
 use Sg\DatatablesBundle\Datatable\Filter\TextFilter;
 use Sg\DatatablesBundle\Datatable\Helper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function count;
 use function is_string;
 
@@ -53,13 +57,15 @@ class DateTimeColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError|RandomException
      */
     public function renderSingleField(array &$row)
     {
         $path = Helper::getDataPropertyPath($this->data);
 
         if ($this->accessor->isReadable($row, $path)) {
-            if (true === $this->isEditableContentRequired($row)) {
+            if ($this->isEditableContentRequired($row) === true) {
                 $content = $this->renderTemplate($this->accessor->getValue($row, $path), $row[$this->editable->getPk()]);
             } else {
                 $content = $this->renderTemplate($this->accessor->getValue($row, $path));
@@ -73,6 +79,8 @@ class DateTimeColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError|RandomException
      */
     public function renderToMany(array &$row)
     {
@@ -82,12 +90,12 @@ class DateTimeColumn extends AbstractColumn
         if ($this->accessor->isReadable($row, $path)) {
             $entries = $this->accessor->getValue($row, $path);
 
-            if (null !== $entries && count($entries) > 0) {
+            if ($entries !== null && count($entries) > 0) {
                 foreach ($entries as $key => $entry) {
                     $currentPath       = $path . '[' . $key . ']' . $value;
                     $currentObjectPath = Helper::getPropertyPathObjectNotation($path, $key, $value);
 
-                    if (true === $this->isEditableContentRequired($row)) {
+                    if ($this->isEditableContentRequired($row) === true) {
                         $content = $this->renderTemplate(
                             $this->accessor->getValue($row, $currentPath),
                             $row[$this->editable->getPk()],
@@ -116,6 +124,8 @@ class DateTimeColumn extends AbstractColumn
 
     /**
      * {@inheritdoc}
+     *
+     * @throws LoaderError|RuntimeError|SyntaxError
      */
     public function renderPostCreateDatatableJsContent()
     {
@@ -223,10 +233,14 @@ class DateTimeColumn extends AbstractColumn
      * Render template.
      *
      * @param string|null $data
-     * @param string|null $pk
-     * @param string|null $path
+     * @param null $pk
+     * @param null $path
      *
-     * @return mixed|string
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws RandomException
      */
     private function renderTemplate($data, $pk = null, $path = null)
     {
@@ -240,7 +254,7 @@ class DateTimeColumn extends AbstractColumn
         ];
 
         // editable vars
-        if (null !== $pk) {
+        if ($pk !== null) {
             $renderVars = array_merge($renderVars, [
                 'column_class_editable_selector' => $this->getColumnClassEditableSelector(),
                 'pk'                             => $pk,
