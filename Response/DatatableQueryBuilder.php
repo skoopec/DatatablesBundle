@@ -45,12 +45,12 @@ class DatatableQueryBuilder
     /**
      * @internal
      */
-    public const int DISABLE_PAGINATION = -1;
+    public const DISABLE_PAGINATION = -1;
 
     /**
      * @internal
      */
-    public const int INIT_PARAMETER_COUNTER = 100;
+    public const INIT_PARAMETER_COUNTER = 100;
 
     /**
      * $_GET or $_POST parameters.

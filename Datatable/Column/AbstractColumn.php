@@ -41,22 +41,22 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * Identifies a Data Column.
      */
-    public const string DATA_COLUMN = 'data';
+    public const DATA_COLUMN = 'data';
 
     /**
      * Identifies an Action Column.
      */
-    public const string ACTION_COLUMN = 'action';
+    public const ACTION_COLUMN = 'action';
 
     /**
      * Identifies a Multiselect Column.
      */
-    public const string MULTISELECT_COLUMN = 'multiselect';
+    public const MULTISELECT_COLUMN = 'multiselect';
 
     /**
      * Identifies a Virtual Column.
      */
-    public const string VIRTUAL_COLUMN = 'virtual';
+    public const VIRTUAL_COLUMN = 'virtual';
 
     //--------------------------------------------------------------------------------------------------
     // DataTables - Columns Options
