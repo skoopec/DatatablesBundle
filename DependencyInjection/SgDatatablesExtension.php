@@ -49,7 +49,7 @@ class SgDatatablesExtension extends Extension implements PrependExtensionInterfa
                 'assets' => [
                     'packages' => [
                         'datatables_cdn' => [
-                            'base_url' => 'https://cdn.datatables.net/plug-ins/1.10.13/i18n/',
+                            'base_url' => 'https://cdn.datatables.net/plug-ins/2.2.2/i18n/',
                         ],
                     ],
                 ],
