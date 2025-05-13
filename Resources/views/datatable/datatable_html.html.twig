@@ -42,7 +42,7 @@
         {% if true == individual_filtering %}
             {% if 'foot' == sg_datatables_view.options.individualFilteringPosition or 'both' == sg_datatables_view.options.individualFilteringPosition%}
             <tfoot>
-                    <tr>
+                    <tr id="sg-datatables-{{ sg_datatables_view.uniqueName }}-filterrow-foot">
                         {% for column in sg_datatables_view.columnBuilder.columns %}
                             {% if column.sentInResponse %}
                                 <td>
