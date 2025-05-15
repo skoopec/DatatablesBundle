@@ -25,6 +25,9 @@
 {% endif %}
 
 {% if data is not same as(null) %}
+    {% if twig_date_format is not empty %}
+        {{ data|format_datetime(pattern: twig_date_format, locale: app.request.locale) }}
+    {% else %}
     <script type="text/javascript">
         $(function() {
             moment.locale("{{ app.request.locale }}");
@@ -36,4 +39,5 @@
             {% endif %}
         });
     </script>
+    {% endif %}
 {% endif %}
