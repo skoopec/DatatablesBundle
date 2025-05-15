@@ -51,6 +51,16 @@ class DateTimeColumn extends AbstractColumn
      */
     protected $timeago;
 
+    /**
+     * Render date through a twig template if the string is not empty.
+     * Default: ''.
+     *
+     * @see https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
+     *
+     * @var string
+     */
+    protected $twigDateFormat;
+
     //-------------------------------------------------
     // ColumnInterface
     //-------------------------------------------------
@@ -161,12 +171,14 @@ class DateTimeColumn extends AbstractColumn
             'timeago'     => false,
             'filter'      => [TextFilter::class, []],
             'editable'    => null,
+            'twig_date_format' => '',
         ]);
 
         $resolver->setAllowedTypes('date_format', 'string');
         $resolver->setAllowedTypes('timeago', 'bool');
         $resolver->setAllowedTypes('filter', 'array');
         $resolver->setAllowedTypes('editable', ['null', 'array']);
+        $resolver->setAllowedTypes('twig_date_format', 'string');
 
         return $this;
     }
@@ -225,6 +237,26 @@ class DateTimeColumn extends AbstractColumn
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getTwigDateFormat()
+    {
+        return $this->twigDateFormat;
+    }
+
+    /**
+     * @param string $twigDateFormat
+     *
+     * @return $this
+     */
+    public function setTwigDateFormat($twigDateFormat)
+    {
+        $this->twigDateFormat = $twigDateFormat;
+
+        return $this;
+    }
+
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
@@ -245,12 +277,13 @@ class DateTimeColumn extends AbstractColumn
     private function renderTemplate($data, $pk = null, $path = null)
     {
         $renderVars = [
-            'data'            => $data,
-            'default_content' => $this->getDefaultContent(),
-            'date_format'     => $this->dateFormat,
-            'timeago'         => $this->timeago,
-            'datatable_name'  => $this->getDatatableName(),
-            'row_id'          => Helper::generateUniqueID(),
+            'data'             => $data,
+            'default_content'  => $this->getDefaultContent(),
+            'date_format'      => $this->dateFormat,
+            'timeago'          => $this->timeago,
+            'datatable_name'   => $this->getDatatableName(),
+            'twig_date_format' => $this->twigDateFormat,
+            'row_id'           => Helper::generateUniqueID(),
         ];
 
         // editable vars
