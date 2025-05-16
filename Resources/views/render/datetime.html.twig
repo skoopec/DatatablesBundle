@@ -17,17 +17,18 @@
 {% if column_class_editable_selector is defined %}
     <div {{ datetime_selector }} class="{{ column_class_editable_selector }}" data-pk="{{ pk }}" {% if path is not same as(null) %}data-path="{{ path }}"{% endif %}></div>
 {% else %}
+    {% if twig_date_format is not empty %}
+        {{ data|format_datetime(pattern: twig_date_format, locale: app.request.locale) }}
+    {% else %}
     <div {{ datetime_selector }}>
         {% if data is same as(null) and default_content is not same as(null) %}
             {{ default_content }}
         {% endif %}
     </div>
+    {% endif %}
 {% endif %}
 
-{% if data is not same as(null) %}
-    {% if twig_date_format is not empty %}
-        {{ data|format_datetime(pattern: twig_date_format, locale: app.request.locale) }}
-    {% else %}
+{% if twig_date_format is empty and data is not same as(null) %}
     <script type="text/javascript">
         $(function() {
             moment.locale("{{ app.request.locale }}");
@@ -39,5 +40,4 @@
             {% endif %}
         });
     </script>
-    {% endif %}
 {% endif %}
